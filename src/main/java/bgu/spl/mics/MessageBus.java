@@ -78,7 +78,7 @@ public interface MessageBus {
     void unregister(MicroService m);
 
     /**
-     * Using this method, a <b>registered</b> micro-service can take message
+     * Using this method, a <b>registered</b> micro-service can take a message
      * from its allocated queue.
      * This method is blocking meaning that if no messages
      * are available in the micro-service queue it
