@@ -20,7 +20,7 @@ public class MessageBusImpl implements MessageBus {
 	private final ConcurrentHashMap<Class<? extends Broadcast>, List<MicroService>> broadcastSubscribers; // foreach broadcast, hold the MicroServices which are subscribed to this broadcast
 	private final ConcurrentHashMap<Event<?>, Future<?>> eventFutures; // foreach event, hold the Future of this event
 
-	public MessageBusImpl() {
+	private MessageBusImpl() {
 		instance = null;
 		microServiceQueues = new ConcurrentHashMap<>();
 		eventSubscribers = new ConcurrentHashMap<>();
