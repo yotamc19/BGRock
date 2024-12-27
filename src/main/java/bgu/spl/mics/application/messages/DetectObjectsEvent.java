@@ -1,16 +1,18 @@
 package bgu.spl.mics.application.messages;
 
+import java.util.List;
+
 import bgu.spl.mics.Event;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
 
 public class DetectObjectsEvent implements Event<Boolean> {
-	private final StampedDetectedObjects stampedDetectedObjs;
+	private final List<StampedDetectedObjects> stampedDetectedObjectsList;
 
-	public DetectObjectsEvent(StampedDetectedObjects stampedDetectedObjs) {
-		this.stampedDetectedObjs = stampedDetectedObjs;
+	public DetectObjectsEvent(List<StampedDetectedObjects> stampedDetectedObjectsList) {
+		this.stampedDetectedObjectsList = stampedDetectedObjectsList;
 	}
 
-	public StampedDetectedObjects getStampedDetectedObjects() {
-		return stampedDetectedObjs;
+	public List<StampedDetectedObjects> getStampedDetectedObjects() {
+		return stampedDetectedObjectsList;
 	}
 }

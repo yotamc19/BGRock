@@ -48,16 +48,14 @@ public class LiDarService extends MicroService {
             int timeToSend = currentTime - liDarWorkerTracker.getFrequency();
             if (timeToSend > 0) {
                 List<TrackedObject> trackedObjectsList = liDarWorkerTracker.getAllItemsAtTime(timeToSend);
-                for (TrackedObject obj : trackedObjectsList) {
-                    TrackedObjectEvent e = new TrackedObjectEvent(obj);
-                    Future<Boolean> f = sendEvent(e);
-                    // add some statistics about f
-                }
+                TrackedObjectEvent e = new TrackedObjectEvent(trackedObjectsList);
+                Future<Boolean> f = sendEvent(e);
+                // add some statistics about f
             }
         });
         subscribeEvent(DetectObjectsEvent.class, detectObjectsEvent -> {
             // rethink here
-            // liDarWorkerTracker.trackObjects(detectObjectsEvent.getStampedDetectedObjects());
+            liDarWorkerTracker.trackObjects(detectObjectsEvent.getStampedDetectedObjects());
         });
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
             liDarWorkerTracker.setStatus(LiDarStatus.Down);

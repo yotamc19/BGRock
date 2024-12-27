@@ -7,6 +7,9 @@ import bgu.spl.mics.MicroService;
  * at regular intervals and controlling the simulation's duration.
  */
 public class TimeService extends MicroService {
+    private final int tickTime;
+    private final int duration;
+    private int currentTick;
 
     /**
      * Constructor for TimeService.
@@ -14,9 +17,11 @@ public class TimeService extends MicroService {
      * @param TickTime  The duration of each tick in milliseconds.
      * @param Duration  The total number of ticks before the service terminates.
      */
-    public TimeService(int TickTime, int Duration) {
-        super("Change_This_Name");
-        // TODO Implement this
+    public TimeService(int tickTime, int duration) {
+        super("TimeService");
+        this.tickTime = tickTime;
+        this.duration = duration;
+        this.currentTick = 0;
     }
 
     /**
@@ -25,6 +30,10 @@ public class TimeService extends MicroService {
      */
     @Override
     protected void initialize() {
-        // TODO Implement this
+        Thread t = new Thread(() -> {
+            while (currentTick < duration) {
+                
+            }
+        });
     }
 }

@@ -1,16 +1,17 @@
 package bgu.spl.mics.application.messages;
 
+import java.util.List;
 import bgu.spl.mics.Event;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 public class TrackedObjectEvent implements Event<Boolean> {
-	private final TrackedObject trackedObject;
+	private final List<TrackedObject> trackedObjectsList;
 
-	public TrackedObjectEvent(TrackedObject trackedObject) {
-		this.trackedObject = trackedObject;
+	public TrackedObjectEvent(List<TrackedObject> trackedObjectsList) {
+		this.trackedObjectsList = trackedObjectsList;
 	}
 
-	public TrackedObject geTrackedObject() {
-		return trackedObject;
+	public List<TrackedObject> geTrackedObject() {
+		return trackedObjectsList;
 	}
 }
