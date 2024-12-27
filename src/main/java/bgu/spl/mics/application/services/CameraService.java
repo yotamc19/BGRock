@@ -1,6 +1,13 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CrashedBroadcast;
+import bgu.spl.mics.application.messages.DetectObjectsEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadCast;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.Camera;
+import bgu.spl.mics.application.objects.StampedDetectedObjects;
 
 /**
  * CameraService is responsible for processing data from the camera and
@@ -10,6 +17,7 @@ import bgu.spl.mics.MicroService;
  * the system's StatisticalFolder upon sending its observations.
  */
 public class CameraService extends MicroService {
+    private final Camera camera;
 
     /**
      * Constructor for CameraService.
@@ -17,8 +25,8 @@ public class CameraService extends MicroService {
      * @param camera The Camera object that this service will use to detect objects.
      */
     public CameraService(Camera camera) {
-        super("Change_This_Name");
-        // TODO Implement this
+        super("Camera" + camera.getId());
+        this.camera = camera;
     }
 
     /**
@@ -28,6 +36,21 @@ public class CameraService extends MicroService {
      */
     @Override
     protected void initialize() {
-        // TODO Implement this
+        subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
+            int currentTime = tickBroadcast.getTime();
+            camera.detectObjects(currentTime);
+
+            int timeToSend = currentTime - camera.getFrequency();
+            if (timeToSend > 0) {
+                StampedDetectedObjects detectedObjs = camera.getItemAtTime(timeToSend);
+                if (detectedObjs != null) {
+                    DetectObjectsEvent e = new DetectObjectsEvent(detectedObjs);
+                    Future<Boolean> f = sendEvent(e);
+                    // add some statistics about f
+                }
+            }
+        });
+        subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> terminate());
+        subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> terminate()); // should also include why it crashed
     }
 }
