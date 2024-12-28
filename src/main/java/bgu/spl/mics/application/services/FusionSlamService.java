@@ -1,6 +1,11 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.PoseEvent;
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.TrackedObjectsEvent;
+import bgu.spl.mics.application.objects.FusionSlam;
+import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
  * FusionSlamService integrates data from multiple sensors to build and update
@@ -10,14 +15,16 @@ import bgu.spl.mics.MicroService;
  * transforming and updating the map with new landmarks.
  */
 public class FusionSlamService extends MicroService {
+    private final FusionSlam fusionSlam;
+
     /**
      * Constructor for FusionSlamService.
      *
      * @param fusionSlam The FusionSLAM object responsible for managing the global map.
      */
     public FusionSlamService(FusionSlam fusionSlam) {
-        super("Change_This_Name");
-        // TODO Implement this
+        super("FusionSlamService");
+        this.fusionSlam = fusionSlam;
     }
 
     /**
@@ -27,6 +34,18 @@ public class FusionSlamService extends MicroService {
      */
     @Override
     protected void initialize() {
-        // TODO Implement this
+        subscribeEvent(TrackedObjectsEvent.class, trackObjectsEvent -> {
+            for (TrackedObject trackedObject : trackObjectsEvent.getTrackedObjects()) {
+                fusionSlam.updatePosition(trackedObject);
+            }
+        });
+
+        subscribeEvent(PoseEvent.class, poseEvent -> {
+            fusionSlam.updatePose(poseEvent.getPose());
+        });
+
+        subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
+            
+        });
     }
 }

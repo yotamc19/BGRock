@@ -4,14 +4,18 @@ import java.util.List;
 import bgu.spl.mics.Event;
 import bgu.spl.mics.application.objects.TrackedObject;
 
-public class TrackedObjectEvent implements Event<Boolean> {
+public class TrackedObjectsEvent implements Event<Boolean> {
 	private final List<TrackedObject> trackedObjectsList;
 
-	public TrackedObjectEvent(List<TrackedObject> trackedObjectsList) {
+	public TrackedObjectsEvent(List<TrackedObject> trackedObjectsList) {
 		this.trackedObjectsList = trackedObjectsList;
 	}
 
-	public List<TrackedObject> geTrackedObject() {
+	/**
+	 * 
+	 * @return the list of objects to keep track of
+	 */
+	public List<TrackedObject> getTrackedObjects() {
 		return trackedObjectsList;
 	}
 }

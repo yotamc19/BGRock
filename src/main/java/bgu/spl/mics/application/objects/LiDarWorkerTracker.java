@@ -25,26 +25,50 @@ public class LiDarWorkerTracker {
         lidarDb = LiDarDataBase.getInstance(PATH_TO_LIDAR_DATA_FILE);
     }
 
+    /**
+     * 
+     * @return this lidar id
+     */
     public int getId() {
         return id;
     }
 
+    /**
+     * 
+     * @return this lidar frequency
+     */
     public int getFrequency() {
         return frequency;
     }
 
+    /**
+     * 
+     * @return this lidar status
+     */
     public STATUS getStatus() {
         return status;
     }
 
+    /**
+     * 
+     * @param status to set this lidar status to
+     */
     public void setStatus(STATUS status) {
         this.status = status;
     }
 
+    /**
+     * 
+     * @return this lidar tracked objects
+     */
     public List<TrackedObject> getLastTrackedObjects() {
         return lastTrackedObjects;
     }
 
+    /**
+     * 
+     * @param stampedDetectedObjects which this lidar will need to track from now on
+     */
     public void trackObjects(StampedDetectedObjects stampedDetectedObjects) {
         if (status == STATUS.UP) {
             int time = stampedDetectedObjects.getTime();
@@ -60,6 +84,12 @@ public class LiDarWorkerTracker {
         }
     }
 
+    /**
+     * helper function
+     * 
+     * @param detectedObject of the object that this lidar needs to keep track on from now on
+     * @param time
+     */
     private void startTrackingObject(DetectedObject detectedObject, int time) {
         List<CloudPoint> coordinates = lidarDb.getCoordinatesById(detectedObject.getId());
         lastTrackedObjects.add(new TrackedObject(
@@ -70,6 +100,12 @@ public class LiDarWorkerTracker {
         ));
     }
 
+    /**
+     * helper function
+     * 
+     * @param id to find the trackedobject by
+     * @return the trackedObject with the recieved id
+     */
     private TrackedObject getTrackedObjectById(String id) {
         for (TrackedObject trackedObject : lastTrackedObjects) {
             if (trackedObject.getId() == id) {

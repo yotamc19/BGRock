@@ -14,14 +14,14 @@ public class DetectedObject {
     }
 
     /**
-     * @return the object's id
+     * @return the object id
      */
     public String getId() {
         return id;
     }
     
     /**
-     * @return the object's description
+     * @return the object description
      */
     public String getDescription() {
         return description;
