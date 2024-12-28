@@ -46,10 +46,12 @@ public class CameraService extends MicroService {
                 // add some statistics
             }
         });
+
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
             camera.setStatus(STATUS.DOWN);
             terminate();
         });
+        
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
             camera.setStatus(STATUS.ERROR);
             terminate();
