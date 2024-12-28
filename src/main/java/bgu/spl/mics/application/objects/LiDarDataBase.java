@@ -38,6 +38,15 @@ public class LiDarDataBase {
         return cloudPoints;
     }
 
+    public List<CloudPoint> getCoordinatesById(String id) {
+        for (StampedCloudPoints point : cloudPoints) {
+            if (point.getId() == id) {
+                return point.getCloudPoints();
+            }
+        }
+        return null;
+    }
+
     public void loadData(String filePath) {
         Gson gson = new Gson();
         try {
