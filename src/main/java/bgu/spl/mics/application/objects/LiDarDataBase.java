@@ -34,10 +34,19 @@ public class LiDarDataBase {
         return instance;
     }
 
+    /**
+     * 
+     * @return all the StampedCloudPoints from the database
+     */
     public List<StampedCloudPoints> getCloudPoints() {
         return cloudPoints;
     }
 
+    /**
+     * 
+     * @param id of the object which we need to find his coordinates
+     * @return object with {@param id} coordinates if exists, null otherwise
+     */
     public List<CloudPoint> getCoordinatesById(String id) {
         for (StampedCloudPoints point : cloudPoints) {
             if (point.getId() == id) {
@@ -47,6 +56,11 @@ public class LiDarDataBase {
         return null;
     }
 
+    /**
+     * loadData load all the lidar data from the resource file and saves it on this class fields
+     * 
+     * @param filePath of the lidar data
+     */
     public void loadData(String filePath) {
         Gson gson = new Gson();
         try {

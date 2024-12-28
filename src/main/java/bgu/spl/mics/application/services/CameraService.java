@@ -39,16 +39,11 @@ public class CameraService extends MicroService {
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             int currentTime = tickBroadcast.getTime();
-            camera.detectObjects(currentTime);
-
-            int timeToSend = currentTime - camera.getFrequency();
-            if (timeToSend > 0) {
-                StampedDetectedObjects detectedObjs = camera.getItemAtTime(timeToSend);
-                if (detectedObjs != null) {
-                    DetectObjectsEvent e = new DetectObjectsEvent(detectedObjs);
-                    Future<Boolean> f = sendEvent(e);
-                    // add some statistics about f
-                }
+            StampedDetectedObjects stampedDetectedObjects = camera.detectObjects(currentTime + camera.getFrequency());
+            if (stampedDetectedObjects != null) {
+                DetectObjectsEvent e = new DetectObjectsEvent(stampedDetectedObjects);
+                Future<Boolean> f = sendEvent(e);
+                // add some statistics
             }
         });
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {

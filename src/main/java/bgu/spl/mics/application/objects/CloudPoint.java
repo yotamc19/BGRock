@@ -15,14 +15,26 @@ public class CloudPoint {
         this.z = z;
     }
 
+    /**
+     * 
+     * @return x coordinate
+     */
     public double getX() {
         return x;
     }
 
+    /**
+     * 
+     * @return y coordinate
+     */
     public double getY() {
         return y;
     }
 
+    /**
+     * 
+     * @return z coordinate
+     */
     public double getZ() {
         return z;
     }
