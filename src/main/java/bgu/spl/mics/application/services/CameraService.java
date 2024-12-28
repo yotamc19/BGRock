@@ -7,8 +7,8 @@ import bgu.spl.mics.application.messages.DetectObjectsEvent;
 import bgu.spl.mics.application.messages.TerminatedBroadCast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.Camera;
+import bgu.spl.mics.application.objects.STATUS;
 import bgu.spl.mics.application.objects.StampedDetectedObjects;
-import bgu.spl.mics.application.statuses.CameraStatus;
 
 /**
  * CameraService is responsible for processing data from the camera and
@@ -52,11 +52,11 @@ public class CameraService extends MicroService {
             }
         });
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
-            camera.setStatus(CameraStatus.Down);
+            camera.setStatus(STATUS.DOWN);
             terminate();
         });
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
-            camera.setStatus(CameraStatus.Error);
+            camera.setStatus(STATUS.ERROR);
             terminate();
              // should also include why it crashed
         });

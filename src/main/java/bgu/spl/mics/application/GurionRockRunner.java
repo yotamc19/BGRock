@@ -1,5 +1,8 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.application.objects.LiDarDataBase;
+import bgu.spl.mics.application.objects.StampedCloudPoints;
+
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
  * <p>
@@ -22,5 +25,13 @@ public class GurionRockRunner {
         // TODO: Parse configuration file.
         // TODO: Initialize system components and services.
         // TODO: Start the simulation.
+
+        String path = "example input/lidar_data.json";
+        LiDarDataBase liDarDataBase = LiDarDataBase.getInstance(path);
+        
+        // Print all stamped cloud points
+        for (StampedCloudPoints point : liDarDataBase.getCloudPoints()) {
+            System.out.println(point);
+        }
     }
 }

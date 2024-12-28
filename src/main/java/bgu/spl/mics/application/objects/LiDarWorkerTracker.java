@@ -8,8 +8,6 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import bgu.spl.mics.application.statuses.LiDarStatus;
-
 /**
  * LiDarWorkerTracker is responsible for managing a LiDAR worker.
  * It processes DetectObjectsEvents and generates TrackedObjectsEvents by using data from the LiDarDataBase.
@@ -18,14 +16,14 @@ import bgu.spl.mics.application.statuses.LiDarStatus;
 public class LiDarWorkerTracker {
     private final int id;
     private final int frequency;
-    private LiDarStatus status;
+    private STATUS status;
     private final List<TrackedObject> lastTrackedObjects;
     private final List<TrackedObject> allTrackedObjects;
 
     public LiDarWorkerTracker(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
-        status = LiDarStatus.Up;
+        status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
         allTrackedObjects = loadTrackedObjectsFromFile();
     }
@@ -38,11 +36,11 @@ public class LiDarWorkerTracker {
         return frequency;
     }
 
-    public LiDarStatus getStatus() {
+    public STATUS getStatus() {
         return status;
     }
 
-    public void setStatus(LiDarStatus status) {
+    public void setStatus(STATUS status) {
         this.status = status;
     }
 
@@ -51,7 +49,7 @@ public class LiDarWorkerTracker {
     }
 
     public void trackObjects(int currentTime) {
-        if (status == LiDarStatus.Up) {
+        if (status == STATUS.UP) {
             for (int i = 0; i < allTrackedObjects.size(); i++) {
                 if (currentTime == allTrackedObjects.get(i).getTime()) {
                     lastTrackedObjects.add(allTrackedObjects.get(i));
