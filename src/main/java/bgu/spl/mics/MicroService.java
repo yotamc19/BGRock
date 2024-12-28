@@ -157,6 +157,7 @@ public abstract class MicroService implements Runnable {
         while (!terminated) {
             try {
                 Message m = messageBus.awaitMessage(this);
+                @SuppressWarnings("unchecked")
                 Callback<Message> c = (Callback<Message>)callbacks.get(m.getClass());
                 if (c != null) {
                     c.call(m);
