@@ -1,12 +1,7 @@
 package bgu.spl.mics.application.objects;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * LiDarWorkerTracker is responsible for managing a LiDAR worker.
@@ -18,14 +13,16 @@ public class LiDarWorkerTracker {
     private final int frequency;
     private STATUS status;
     private final List<TrackedObject> lastTrackedObjects;
-    private final List<TrackedObject> allTrackedObjects;
-
+    private final LiDarDataBase lidarDb;
+    
     public LiDarWorkerTracker(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
         status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
-        allTrackedObjects = loadTrackedObjectsFromFile();
+
+        String PATH_TO_LIDAR_DATA_FILE = "example input/lidar_data.json";
+        lidarDb = LiDarDataBase.getInstance(PATH_TO_LIDAR_DATA_FILE);
     }
 
     public int getId() {
@@ -48,35 +45,37 @@ public class LiDarWorkerTracker {
         return lastTrackedObjects;
     }
 
-    public void trackObjects(int currentTime) {
+    public void trackObjects(StampedDetectedObjects stampedDetectedObjects) {
         if (status == STATUS.UP) {
-            for (int i = 0; i < allTrackedObjects.size(); i++) {
-                if (currentTime == allTrackedObjects.get(i).getTime()) {
-                    lastTrackedObjects.add(allTrackedObjects.get(i));
+            int time = stampedDetectedObjects.getTime();
+            for (DetectedObject detectedObject : stampedDetectedObjects.getDetectedObjects()) {
+                String currentId = detectedObject.getId();
+                TrackedObject trackedObject = getTrackedObjectById(currentId);
+                if (trackedObject == null) { // object is not tracked yet
+                    startTrackingObject(detectedObject, time);
+                } else { // object already tracked
+                    trackedObject.setTime(time);
                 }
             }
         }
     }
 
-    public List<TrackedObject> getAllItemsAtTime(int time) {
-        List<TrackedObject> list = new ArrayList<>();
-        for (TrackedObject obj : allTrackedObjects) {
-            if (obj.getTime() == time) {
-                list.add(obj);
-            }
-        }
-        return list;
+    private void startTrackingObject(DetectedObject detectedObject, int time) {
+        List<CloudPoint> coordinates = lidarDb.getCoordinatesById(detectedObject.getId());
+        lastTrackedObjects.add(new TrackedObject(
+            detectedObject.getId(),
+            time,
+            detectedObject.getDescription(),
+            coordinates
+        ));
     }
 
-    private List<TrackedObject> loadTrackedObjectsFromFile() {
-        Gson gson = new Gson();
-        try (FileReader reader = new FileReader("lidar_data.json")) {
-            Type trackedObjectType = new TypeToken<List<TrackedObject>>(){}.getType();
-            List<TrackedObject> trackedObjectsList = gson.fromJson(reader, trackedObjectType);
-            return trackedObjectsList;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    private TrackedObject getTrackedObjectById(String id) {
+        for (TrackedObject trackedObject : lastTrackedObjects) {
+            if (trackedObject.getId() == id) {
+                return trackedObject;
+            }
         }
+        return null;
     }
 }

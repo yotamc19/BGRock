@@ -10,6 +10,7 @@ import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectEvent;
 import bgu.spl.mics.application.objects.LiDarWorkerTracker;
 import bgu.spl.mics.application.objects.STATUS;
+import bgu.spl.mics.application.objects.StampedDetectedObjects;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
@@ -42,20 +43,21 @@ public class LiDarService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            int currentTime = tickBroadcast.getTime();
-            liDarWorkerTracker.trackObjects(currentTime);
+            // int currentTime = tickBroadcast.getTime();
+            // liDarWorkerTracker.trackObjects(currentTime);
 
-            int timeToSend = currentTime - liDarWorkerTracker.getFrequency();
-            if (timeToSend > 0) {
-                List<TrackedObject> trackedObjectsList = liDarWorkerTracker.getAllItemsAtTime(timeToSend);
-                TrackedObjectEvent e = new TrackedObjectEvent(trackedObjectsList);
-                Future<Boolean> f = sendEvent(e);
-                // add some statistics about f
-            }
+            // int timeToSend = currentTime - liDarWorkerTracker.getFrequency();
+            // if (timeToSend > 0) {
+            //     List<TrackedObject> trackedObjectsList = liDarWorkerTracker.getAllItemsAtTime(timeToSend);
+            //     TrackedObjectEvent e = new TrackedObjectEvent(trackedObjectsList);
+            //     Future<Boolean> f = sendEvent(e);
+            //     // add some statistics about f
+            // }
         });
         subscribeEvent(DetectObjectsEvent.class, detectObjectsEvent -> {
-            // rethink here
-            liDarWorkerTracker.trackObjects(detectObjectsEvent.getStampedDetectedObjects());
+            for (StampedDetectedObjects objects : detectObjectsEvent.getStampedDetectedObjects()) {
+                liDarWorkerTracker.trackObjects(objects);
+            }
         });
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
             liDarWorkerTracker.setStatus(STATUS.DOWN);

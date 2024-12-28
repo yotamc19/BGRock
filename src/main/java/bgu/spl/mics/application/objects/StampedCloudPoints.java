@@ -9,9 +9,9 @@ import java.util.List;
 public class StampedCloudPoints {
     private final String id;
     private final int time;
-    private final List<double[]> cloudPoints;
+    private final List<CloudPoint> cloudPoints;
 
-    public StampedCloudPoints(String id, int time, List<double[]> cloudPoints) {
+    public StampedCloudPoints(String id, int time, List<CloudPoint> cloudPoints) {
         this.id = id;
         this.time = time;
         this.cloudPoints = cloudPoints;
@@ -25,7 +25,7 @@ public class StampedCloudPoints {
         return time;
     }
 
-    public List<double[]> getCloudPoints() {
+    public List<CloudPoint> getCloudPoints() {
         return cloudPoints;
     }
 }
