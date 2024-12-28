@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.services;
 
+import java.util.concurrent.TimeUnit;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.TerminatedBroadCast;
+import bgu.spl.mics.application.messages.TickBroadcast;
 
 /**
  * TimeService acts as the global timer for the system, broadcasting TickBroadcast messages
@@ -32,8 +35,22 @@ public class TimeService extends MicroService {
     protected void initialize() {
         Thread t = new Thread(() -> {
             while (currentTick < duration) {
-                
+                try {
+                    TimeUnit.MILLISECONDS.sleep(tickTime);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+
+                currentTick++;
+                TickBroadcast tickBroadcast = new TickBroadcast(currentTick);
+                sendBroadcast(tickBroadcast);
             }
+
+            sendBroadcast(new TerminatedBroadCast()); // finished running the program
+            terminate();
         });
+
+        t.start();
     }
 }
