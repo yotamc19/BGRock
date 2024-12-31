@@ -17,7 +17,7 @@ public class PoseService extends MicroService {
      * @param gpsimu The GPSIMU object that provides the robot's pose data.
      */
     public PoseService(GPSIMU gpsimu) {
-        super("GPSIMUService");
+        super("PoseService"); 
         this.gpsimu = gpsimu;
     }
 
@@ -28,6 +28,10 @@ public class PoseService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
+            /** get the current pose from the json file
+             *  send a poseEvent to fusionSlamService- current pose, current time
+             *  should handle terminated?
+             */ 
 
         });
     }

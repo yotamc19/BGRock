@@ -39,6 +39,7 @@ public class GPSIMU {
     }
 
     public void addPose(Pose pose) {
-        poses.add(pose);
+        poses.add(pose);////////// from the data base   // יעני פונקציה gePosesFromDataBase()
     }
+
 }

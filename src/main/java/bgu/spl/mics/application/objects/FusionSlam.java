@@ -51,15 +51,17 @@ public class FusionSlam {
      */
     public void updatePosition(TrackedObject trackedObject) {
         LandMark trackedLandmark = getLandmarkById(trackedObject.getId());
-        if (trackedLandmark == null) { // the landmark has been recognized before
+        if (trackedLandmark == null) { // the landmark has been recognized before   //? has not maybe
             trackedLandmark = new LandMark(
                 trackedObject.getId(),
                 trackedObject.getDescription(),
-                trackedObject.getCoordinates()
+
+                convertToGlobalCoordinates(trackedObject)
+                //trackedObject.getCoordinates()//////////////////? not the correct coordinates?
             );
             landmarks.add(trackedLandmark);
-        } else { // first time seeing this landmark
-            trackedLandmark.updateCoordinates(trackedObject.getCoordinates());
+        } else { // first time seeing this landmark // not first time maybe?
+            trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
         }
     }
 
@@ -84,5 +86,41 @@ public class FusionSlam {
             }
         }
         return null;
+    }
+
+    /*
+     * helper function
+     * @param obj the object of which we want to convert the coordinates
+     * @return the global coordinates resulting in calculations using the coresponding pose and the coordinates
+     */
+    private CloudPoint convertToGlobalCoordinates(TrackedObject obj){
+        CloudPoint prevCoordinatres = obj.getCoordinates();///////////////////////////////
+
+        /*
+         *  for all coordinates- לעשות את החישוב
+         */
+
+        int time = obj.getTime();/////////// לוודא שזה הזמן שבו הוא נסרק
+        // finding pose- the robot's pose at the time of the tracking
+        Pose pose = null; 
+        for (Pose p: poses){
+            if (p.getTime() == time){
+                pose = p;
+                break;
+            }
+        }
+
+        double xLocal = obj.getCoordinates().getX();
+        double yLocal = obj.getCoordinates().getY();
+        double xRobot = pose.getX();
+        double yRobot = pose.getY();
+
+        double yawInRadian = Math.toRadians(pose.getYaw());
+        double cosinYaw = Math.cos(yawInRadian);
+        double sinYaw = Math.sin(yawInRadian);
+        double xGlobal = (cosinYaw * xLocal) - (sinYaw * yLocal) + xRobot;
+        double yGlobal = (sinYaw * xLocal) + (cosinYaw * yLocal) + yRobot;
+
+        return new CloudPoint(xGlobal, yGlobal, obj.getZ());
     }
 }

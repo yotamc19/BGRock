@@ -5,6 +5,7 @@ import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.FusionSlam;
+import bgu.spl.mics.application.objects.StatisticalFolder;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
@@ -16,6 +17,7 @@ import bgu.spl.mics.application.objects.TrackedObject;
  */
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
+    private StatisticalFolder statisticalFolder;
 
     /**
      * Constructor for FusionSlamService.
@@ -25,6 +27,7 @@ public class FusionSlamService extends MicroService {
     public FusionSlamService(FusionSlam fusionSlam) {
         super("FusionSlamService");
         this.fusionSlam = fusionSlam;
+        statisticalFolder = statisticalFolder.getInstance();
     }
 
     /**
@@ -35,8 +38,13 @@ public class FusionSlamService extends MicroService {
     @Override
     protected void initialize() {
         subscribeEvent(TrackedObjectsEvent.class, trackObjectsEvent -> {
+            int addedLandmarks=0;
             for (TrackedObject trackedObject : trackObjectsEvent.getTrackedObjects()) {
-                fusionSlam.updatePosition(trackedObject);
+                fusionSlam.updatePosition(trackedObject); // updating with the global coordinates
+                addedLandmarks++;
+            }
+            if (addedLandmarks > 0){
+                statisticalFolder.increaseNumLandmarks(addedLandmarks);
             }
         });
 
@@ -45,7 +53,7 @@ public class FusionSlamService extends MicroService {
         });
 
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            
+            // 
         });
     }
 }
