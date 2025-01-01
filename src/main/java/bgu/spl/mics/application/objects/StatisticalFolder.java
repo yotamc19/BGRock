@@ -22,7 +22,7 @@ public class StatisticalFolder {
         numLandmarks = new AtomicInteger(0);
     }
 
-    public StatisticalFolder getInstance() { ////////////////////////////////
+    public StatisticalFolder getInstance() {
         if (instance == null) {
             instance = new StatisticalFolder();
         }
