@@ -26,4 +26,8 @@ public class DetectedObject {
     public String getDescription() {
         return description;
     }
+
+    public String toString() {
+        return "id: " + id + ", description: " + description;
+    }
 }

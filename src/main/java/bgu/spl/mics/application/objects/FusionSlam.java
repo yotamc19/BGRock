@@ -66,7 +66,7 @@ public class FusionSlam {
             landmarks.add(trackedLandmark);
         } else { // first time seeing this landmark // not first time maybe?
             // trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
-            trackedLandmark.updateCoordinates(trackedObject.getCoordinates());
+            trackedLandmark.updateCoordinates(getGlobalCoordinates(trackedObject));
         }
     }
 
