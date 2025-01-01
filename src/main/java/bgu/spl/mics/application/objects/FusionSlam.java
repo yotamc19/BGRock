@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Manages the fusion of sensor data for simultaneous localization and mapping (SLAM).
- * Combines data from multiple sensors (e.g., LiDAR, camera) to build and update a global map.
- * Implements the Singleton pattern to ensure a single instance of FusionSlam exists.
+ * Manages the fusion of sensor data for simultaneous localization and mapping
+ * (SLAM).
+ * Combines data from multiple sensors (e.g., LiDAR, camera) to build and update
+ * a global map.
+ * Implements the Singleton pattern to ensure a single instance of FusionSlam
+ * exists.
  */
 public class FusionSlam {
     private static FusionSlam instance = null;
     private final List<LandMark> landmarks;
-    private final List<Pose> poses; 
+    private final List<Pose> poses;
 
     private FusionSlam() {
         landmarks = new ArrayList<>();
@@ -47,21 +50,23 @@ public class FusionSlam {
 
     /**
      * 
-     * @param trackedObject represents the object which needs to get his position updated
+     * @param trackedObject represents the object which needs to get his position
+     *                      updated
      */
     public void updatePosition(TrackedObject trackedObject) {
         LandMark trackedLandmark = getLandmarkById(trackedObject.getId());
-        if (trackedLandmark == null) { // the landmark has been recognized before   //? has not maybe
+        if (trackedLandmark == null) { // the landmark has been recognized before //? has not maybe
             trackedLandmark = new LandMark(
-                trackedObject.getId(),
-                trackedObject.getDescription(),
-
-                convertToGlobalCoordinates(trackedObject)
-                //trackedObject.getCoordinates()//////////////////? not the correct coordinates?
+                    trackedObject.getId(),
+                    trackedObject.getDescription(),
+                    getGlobalCoordinates(trackedObject)
+            // trackedObject.getCoordinates()////////////////// ? not the correct
+            // coordinates?
             );
             landmarks.add(trackedLandmark);
         } else { // first time seeing this landmark // not first time maybe?
-            trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
+            // trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
+            trackedLandmark.updateCoordinates(trackedObject.getCoordinates());
         }
     }
 
@@ -88,30 +93,34 @@ public class FusionSlam {
         return null;
     }
 
-    /*
+    /**
      * helper function
-     * @param obj the object of which we want to convert the coordinates
-     * @return the global coordinates resulting in calculations using the coresponding pose and the coordinates
+     * 
+     * @param trackedObject the object of which we want to convert the coordinates
+     * @return the global coordinates resulting in calculations using the
+     *         coresponding pose and the coordinates
      */
-    private CloudPoint convertToGlobalCoordinates(TrackedObject obj){
-        CloudPoint prevCoordinatres = obj.getCoordinates();///////////////////////////////
-
-        /*
-         *  for all coordinates- לעשות את החישוב
-         */
-
-        int time = obj.getTime();/////////// לוודא שזה הזמן שבו הוא נסרק
-        // finding pose- the robot's pose at the time of the tracking
-        Pose pose = null; 
-        for (Pose p: poses){
-            if (p.getTime() == time){
-                pose = p;
+    private List<CloudPoint> getGlobalCoordinates(TrackedObject trackedObject) {
+        int time = trackedObject.getTime();
+        List<CloudPoint> prevCoordinatres = trackedObject.getCoordinates();
+        Pose currentPose = null;
+        for (Pose pose : poses) {
+            if (pose.getTime() == time) {
+                currentPose = pose;
                 break;
             }
         }
 
-        double xLocal = obj.getCoordinates().getX();
-        double yLocal = obj.getCoordinates().getY();
+        List<CloudPoint> globalCoordinates = new ArrayList<>();
+        for (CloudPoint point : prevCoordinatres) {
+            globalCoordinates.add(convertLocalPointToGlobalPoint(point, currentPose));
+        }
+        return globalCoordinates;
+    }
+
+    private CloudPoint convertLocalPointToGlobalPoint(CloudPoint point, Pose pose) {
+        double xLocal = point.getX();
+        double yLocal = point.getY();
         double xRobot = pose.getX();
         double yRobot = pose.getY();
 
@@ -121,6 +130,6 @@ public class FusionSlam {
         double xGlobal = (cosinYaw * xLocal) - (sinYaw * yLocal) + xRobot;
         double yGlobal = (sinYaw * xLocal) + (cosinYaw * yLocal) + yRobot;
 
-        return new CloudPoint(xGlobal, yGlobal, obj.getZ());
+        return new CloudPoint(xGlobal, yGlobal, point.getZ());
     }
 }

@@ -18,7 +18,8 @@ import bgu.spl.mics.application.objects.TrackedObject;
  * LiDarService is responsible for processing data from the LiDAR sensor and
  * sending TrackedObjectsEvents to the FusionSLAM service.
  * 
- * This service interacts with the LiDarWorkerTracker object to retrieve and process
+ * This service interacts with the LiDarWorkerTracker object to retrieve and
+ * process
  * cloud point data and updates the system's StatisticalFolder upon sending its
  * observations.
  */
@@ -29,7 +30,8 @@ public class LiDarService extends MicroService {
     /**
      * Constructor for LiDarService.
      *
-     * @param LiDarWorkerTracker A LiDAR Tracker worker object that this service will use to process data.
+     * @param LiDarWorkerTracker A LiDAR Tracker worker object that this service
+     *                           will use to process data.
      */
     public LiDarService(LiDarWorkerTracker liDarWorkerTracker) {
         super("LiDarWorkerTracker" + liDarWorkerTracker.getId());
@@ -50,7 +52,8 @@ public class LiDarService extends MicroService {
             List<TrackedObject> trackedObjectsFound = new ArrayList<>();
             List<TrackedObject> lastTrackedObjects = liDarWorkerTracker.getLastTrackedObjects();
             for (TrackedObject trackedObject : lastTrackedObjects) {
-                if (trackedObject.getTime() <= currentTime - liDarWorkerTracker.getFrequency()) { /////////////////// - <
+                if (trackedObject.getTime() <= currentTime - liDarWorkerTracker.getFrequency()) { /////////////////// -
+                                                                                                  /////////////////// <
                     trackedObjectsFound.add(trackedObject);
                 }
             }
@@ -66,16 +69,16 @@ public class LiDarService extends MicroService {
         subscribeEvent(DetectObjectsEvent.class, detectObjectsEvent -> {
             liDarWorkerTracker.trackObjects(detectObjectsEvent.getStampedDetectedObjects());
         });
-        
+
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
             liDarWorkerTracker.setStatus(STATUS.DOWN);
             terminate();
         });
-        
+
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
             liDarWorkerTracker.setStatus(STATUS.ERROR);
             terminate();
-             // should also include why it crashed
+            // should also include why it crashed
         });
     }
 }

@@ -30,12 +30,13 @@ public class CameraService extends MicroService {
     public CameraService(Camera camera) {
         super("Camera" + camera.getId());
         this.camera = camera;
-        statisticalFolder = statisticalFolder.getInstance();//////////////////////yes?
+        statisticalFolder = statisticalFolder.getInstance();////////////////////// yes?
     }
 
     /**
      * Initializes the CameraService.
-     * Registers the service to handle TickBroadcasts and sets up callbacks for sending
+     * Registers the service to handle TickBroadcasts and sets up callbacks for
+     * sending
      * DetectObjectsEvents.
      */
     @Override
@@ -56,11 +57,11 @@ public class CameraService extends MicroService {
             camera.setStatus(STATUS.DOWN);
             terminate();
         });
-        
+
         subscribeBroadcast(CrashedBroadcast.class, crashedBroadcast -> {
             camera.setStatus(STATUS.ERROR);
             terminate();
-             // should also include why it crashed
+            // should also include why it crashed
         });
     }
 }

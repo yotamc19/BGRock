@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * LiDarWorkerTracker is responsible for managing a LiDAR worker.
- * It processes DetectObjectsEvents and generates TrackedObjectsEvents by using data from the LiDarDataBase.
+ * It processes DetectObjectsEvents and generates TrackedObjectsEvents by using
+ * data from the LiDarDataBase.
  * Each worker tracks objects and sends observations to the FusionSlam service.
  */
 public class LiDarWorkerTracker {
@@ -14,7 +15,7 @@ public class LiDarWorkerTracker {
     private STATUS status;
     private final List<TrackedObject> lastTrackedObjects;
     private final LiDarDataBase lidarDb;
-    
+
     public LiDarWorkerTracker(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
@@ -87,17 +88,17 @@ public class LiDarWorkerTracker {
     /**
      * helper function
      * 
-     * @param detectedObject of the object that this lidar needs to keep track on from now on
+     * @param detectedObject of the object that this lidar needs to keep track on
+     *                       from now on
      * @param time
      */
     private void startTrackingObject(DetectedObject detectedObject, int time) {
         List<CloudPoint> coordinates = lidarDb.getCoordinatesById(detectedObject.getId());
         lastTrackedObjects.add(new TrackedObject(
-            detectedObject.getId(),
-            time,
-            detectedObject.getDescription(),
-            coordinates
-        ));
+                detectedObject.getId(),
+                time,
+                detectedObject.getDescription(),
+                coordinates));
     }
 
     /**

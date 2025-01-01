@@ -5,46 +5,41 @@ import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.FusionSlam;
-import bgu.spl.mics.application.objects.StatisticalFolder;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
  * FusionSlamService integrates data from multiple sensors to build and update
  * the robot's global map.
  * 
- * This service receives TrackedObjectsEvents from LiDAR workers and PoseEvents from the PoseService,
+ * This service receives TrackedObjectsEvents from LiDAR workers and PoseEvents
+ * from the PoseService,
  * transforming and updating the map with new landmarks.
  */
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
-    private StatisticalFolder statisticalFolder;
 
     /**
      * Constructor for FusionSlamService.
      *
-     * @param fusionSlam The FusionSLAM object responsible for managing the global map.
+     * @param fusionSlam The FusionSLAM object responsible for managing the global
+     *                   map.
      */
     public FusionSlamService(FusionSlam fusionSlam) {
         super("FusionSlamService");
         this.fusionSlam = fusionSlam;
-        statisticalFolder = statisticalFolder.getInstance();
     }
 
     /**
      * Initializes the FusionSlamService.
-     * Registers the service to handle TrackedObjectsEvents, PoseEvents, and TickBroadcasts,
+     * Registers the service to handle TrackedObjectsEvents, PoseEvents, and
+     * TickBroadcasts,
      * and sets up callbacks for updating the global map.
      */
     @Override
     protected void initialize() {
         subscribeEvent(TrackedObjectsEvent.class, trackObjectsEvent -> {
-            int addedLandmarks=0;
             for (TrackedObject trackedObject : trackObjectsEvent.getTrackedObjects()) {
-                fusionSlam.updatePosition(trackedObject); // updating with the global coordinates
-                addedLandmarks++;
-            }
-            if (addedLandmarks > 0){
-                statisticalFolder.increaseNumLandmarks(addedLandmarks);
+                fusionSlam.updatePosition(trackedObject);
             }
         });
 
@@ -53,7 +48,7 @@ public class FusionSlamService extends MicroService {
         });
 
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            // 
+
         });
     }
 }

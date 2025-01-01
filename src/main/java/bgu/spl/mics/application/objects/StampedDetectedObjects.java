@@ -9,7 +9,7 @@ import java.util.List;
 public class StampedDetectedObjects {
     private final int time;
     private final List<DetectedObject> detectedObjs;
-    
+
     public StampedDetectedObjects(int time, List<DetectedObject> detectedObjs) {
         this.time = time;
         this.detectedObjs = detectedObjs;

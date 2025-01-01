@@ -19,7 +19,7 @@ public class DetectedObject {
     public String getId() {
         return id;
     }
-    
+
     /**
      * @return the object description
      */

@@ -10,7 +10,8 @@ import com.google.gson.reflect.TypeToken;
 
 /**
  * LiDarDataBase is a singleton class responsible for managing LiDAR data.
- * It provides access to cloud point data and other relevant information for tracked objects.
+ * It provides access to cloud point data and other relevant information for
+ * tracked objects.
  */
 public class LiDarDataBase {
     private static LiDarDataBase instance = null;
@@ -57,7 +58,8 @@ public class LiDarDataBase {
     }
 
     /**
-     * loadData load all the lidar data from the resource file and saves it on this class fields
+     * loadData load all the lidar data from the resource file and saves it on this
+     * class fields
      * 
      * @param filePath of the lidar data
      */

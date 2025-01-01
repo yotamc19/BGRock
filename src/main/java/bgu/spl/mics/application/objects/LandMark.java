@@ -35,15 +35,16 @@ public class LandMark {
 
     /**
      * 
-    * @return this landmark coordinate list
-    */
+     * @return this landmark coordinate list
+     */
     public List<CloudPoint> getCoordinates() {
         return coordinates;
     }
 
     /**
      * 
-     * @param newCoordinates which need to get added to the current coordinate list of this landmar
+     * @param newCoordinates which need to get added to the current coordinate list
+     *                       of this landmar
      */
     public void updateCoordinates(List<CloudPoint> newCoordinates) {
         for (CloudPoint point : newCoordinates) {
@@ -53,8 +54,9 @@ public class LandMark {
 
     /**
      * 
-     * @return the precise location of this landmark based on all the times it was caught on the lidar
-     * calculated by the average
+     * @return the precise location of this landmark based on all the times it was
+     *         caught on the lidar
+     *         calculated by the average
      */
     public CloudPoint getPreciseCoordinates() {
         float sumX = 0;
@@ -65,11 +67,11 @@ public class LandMark {
             sumY += point.getY();
             sumZ += point.getZ();
         }
-        float currentCoordinatesSize = (float)coordinates.size();
+        float currentCoordinatesSize = (float) coordinates.size();
         float exactX = sumX / currentCoordinatesSize;
         float exactY = sumY / currentCoordinatesSize;
         float exactZ = sumZ / currentCoordinatesSize;
-        
+
         return new CloudPoint(exactX, exactY, exactZ);
     }
 }
