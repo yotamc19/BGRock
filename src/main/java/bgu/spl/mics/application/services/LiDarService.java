@@ -52,8 +52,7 @@ public class LiDarService extends MicroService {
             List<TrackedObject> trackedObjectsFound = new ArrayList<>();
             List<TrackedObject> lastTrackedObjects = liDarWorkerTracker.getLastTrackedObjects();
             for (TrackedObject trackedObject : lastTrackedObjects) {
-                if (trackedObject.getTime() <= currentTime - liDarWorkerTracker.getFrequency()) { /////////////////// -
-                                                                                                  /////////////////// <
+                if (trackedObject.getTime() <= currentTime - liDarWorkerTracker.getFrequency()) {
                     trackedObjectsFound.add(trackedObject);
                 }
             }
