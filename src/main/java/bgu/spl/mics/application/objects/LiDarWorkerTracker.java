@@ -10,15 +10,13 @@ import java.util.List;
  * Each worker tracks objects and sends observations to the FusionSlam service.
  */
 public class LiDarWorkerTracker {
-    private final int id;
-    private final int frequency;
+    private int id;
+    private int frequency;
     private STATUS status;
-    private final List<TrackedObject> lastTrackedObjects;
+    private List<TrackedObject> lastTrackedObjects;
     private LiDarDataBase lidarDb;
 
-    public LiDarWorkerTracker(int id, int frequency) {
-        this.id = id;
-        this.frequency = frequency;
+    public LiDarWorkerTracker() {
         status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
     }
@@ -64,6 +62,9 @@ public class LiDarWorkerTracker {
      * @return this lidar tracked objects
      */
     public List<TrackedObject> getLastTrackedObjects() {
+        if (lastTrackedObjects == null) {
+            lastTrackedObjects = new ArrayList<>();
+        }
         return lastTrackedObjects;
     }
 

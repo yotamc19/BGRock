@@ -50,7 +50,7 @@ public class LiDarDataBase {
      */
     public List<CloudPoint> getCoordinatesById(String id) {
         for (StampedCloudPoints point : cloudPoints) {
-            if (point.getId() == id) {
+            if (point.getId().equals(id)) {
                 return point.getCloudPoints();
             }
         }

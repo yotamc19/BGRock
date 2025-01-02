@@ -8,17 +8,15 @@ import java.util.List;
  * Responsible for detecting objects in the environment.
  */
 public class Camera {
-    private final int id;
-    private final int frequency;
+    private int id;
+    private int frequency;
     private STATUS status;
-    private final List<StampedDetectedObjects> detectedObjs;
-    private List<StampedDetectedObjects> allDetectedObjs;
+    private List<StampedDetectedObjects> detectedObjects;
+    private List<StampedDetectedObjects> allDetectedObjects;
 
-    public Camera(int id, int frequency) {
-        this.id = id;
-        this.frequency = frequency;
+    public Camera() {
         status = STATUS.UP;
-        detectedObjs = new ArrayList<>();
+        detectedObjects = new ArrayList<>();
     }
 
     /**
@@ -54,7 +52,7 @@ public class Camera {
     }
 
     public void setAllDetectedObjects(List<StampedDetectedObjects> allDetectedObjects) {
-        this.allDetectedObjs = allDetectedObjects;
+        this.allDetectedObjects = allDetectedObjects;
     }
 
     /**
@@ -63,10 +61,10 @@ public class Camera {
      */
     public StampedDetectedObjects detectObjects(int time) {
         if (status == STATUS.UP) {
-            for (int i = 0; i < allDetectedObjs.size(); i++) {
-                if (time == allDetectedObjs.get(i).getTime()) {
-                    detectedObjs.add(allDetectedObjs.get(i));
-                    return allDetectedObjs.get(i);
+            for (int i = 0; i < allDetectedObjects.size(); i++) {
+                if (time == allDetectedObjects.get(i).getTime()) {
+                    detectedObjects.add(allDetectedObjects.get(i));
+                    return allDetectedObjects.get(i);
                 }
             }
         }
@@ -79,7 +77,7 @@ public class Camera {
      * @return the objects which were detected at time {@param time}
      */
     public StampedDetectedObjects getItemAtTime(int time) {
-        for (StampedDetectedObjects objs : detectedObjs) {
+        for (StampedDetectedObjects objs : detectedObjects) {
             if (objs.getTime() == time) {
                 return objs;
             }

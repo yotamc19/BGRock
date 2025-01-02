@@ -19,6 +19,12 @@ public class CloudPoint {
         this.z = coordinates.get(2);
     }
 
+    public CloudPoint(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
     /**
      * 
      * @return x coordinate

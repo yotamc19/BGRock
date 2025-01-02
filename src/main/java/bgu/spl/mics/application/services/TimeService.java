@@ -38,7 +38,7 @@ public class TimeService extends MicroService {
         Thread t = new Thread(() -> {
             while (currentTick < duration) {
                 try {
-                    TimeUnit.MILLISECONDS.sleep(tickTime);
+                    TimeUnit.SECONDS.sleep(tickTime);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
