@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.List;
+
 /**
  * CloudPoint represents a specific point in a 3D space as detected by the
  * LiDAR.
@@ -11,10 +13,10 @@ public class CloudPoint {
     private final double y;
     private final double z;
 
-    public CloudPoint(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public CloudPoint(List<Double> coordinates) {
+        this.x = coordinates.get(0);
+        this.y = coordinates.get(1);
+        this.z = coordinates.get(2);
     }
 
     /**

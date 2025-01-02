@@ -66,7 +66,8 @@ public class LiDarDataBase {
     public void loadData(String filePath) {
         Gson gson = new Gson();
         try {
-            FileReader reader = new FileReader(filePath);
+            // FileReader reader = new FileReader(filePath);
+            FileReader reader = new FileReader("example input/lidar_data.json");
             Type stampedCloudPointsType = new TypeToken<List<StampedCloudPoints>>() {
             }.getType();
             cloudPoints = gson.fromJson(reader, stampedCloudPointsType);

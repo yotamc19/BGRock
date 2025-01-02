@@ -1,20 +1,18 @@
 package bgu.spl.mics.application;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import bgu.spl.mics.application.objects.Camera;
+import bgu.spl.mics.application.objects.CameraData;
+import bgu.spl.mics.application.objects.Cameras;
 import bgu.spl.mics.application.objects.Config;
-import bgu.spl.mics.application.objects.DetectedObject;
-import bgu.spl.mics.application.objects.LiDarDataBase;
-import bgu.spl.mics.application.objects.StampedCloudPoints;
-import bgu.spl.mics.application.objects.StampedDetectedObjects;
+import bgu.spl.mics.application.objects.FusionSlam;
+import bgu.spl.mics.application.objects.GPSIMU;
+import bgu.spl.mics.application.objects.LiDarWorkerTracker;
+import bgu.spl.mics.application.objects.LiDarWorkers;
 import bgu.spl.mics.application.services.CameraService;
+import bgu.spl.mics.application.services.FusionSlamService;
+import bgu.spl.mics.application.services.LiDarService;
+import bgu.spl.mics.application.services.PoseService;
+import bgu.spl.mics.application.services.TimeService;
 
 /**
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
@@ -36,62 +34,62 @@ public class GurionRockRunner {
     public static void main(String[] args) {
         System.out.println("Hello World!");
 
-        // TODO: Parse configuration file.
-        // TODO: Initialize system components and services.
-        // TODO: Start the simulation.
+        String CONFIG_PATH = "example input/configuration_file.json";
+        Config config = new Config(CONFIG_PATH);
 
-        List<StampedDetectedObjects> stampDetectedObjectsList = new ArrayList<>();
-        Gson gson = new Gson();
-        try {
-            FileReader reader = new FileReader("example input/camera_data.json");
-            Type stampDetectedObjectsType = new TypeToken<List<StampedDetectedObjects>>() {
-            }.getType();
-            stampDetectedObjectsList = gson.fromJson(reader, stampDetectedObjectsType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // cameras setup
+        Cameras cameras = config.getCameras();
+        CameraData cameraData = new CameraData(cameras.getDataFilePath());
+        cameras.updateCamerasAllDetectedObjects(cameraData);
+        createAllCameraServices(cameras);
 
-        for (StampedDetectedObjects obj : stampDetectedObjectsList) {
-            for (DetectedObject o : obj.getDetectedObjects()) {
-                System.out.println(o.toString());
-            }
-        }
+        // lidars setup
+        LiDarWorkers lidars = config.getLiDarWorkers();
+        createAllLidarServices(lidars);
 
+        // fusion slam setup
+        FusionSlam fusionSlam = FusionSlam.getInstance();
+        createFusionSlamService(fusionSlam);
 
+        // pose setup
+        GPSIMU gpsimu = new GPSIMU(config.getPoseDataFilePath());
+        createPoseService(gpsimu);
 
-        // String CONFIG_PATH = "example input/configuration_file.json";
-        // Config config = getConfig(CONFIG_PATH);
-
-
-        // create all camera services
-        // List<Camera> cameras = config.getCameras().getcameras();
-        // String filePath = config.getCameras().getcameraDataFilePath();
-        // createCameraServices(cameras);
-        
-        
-        // create all lidar services
-        // create fusion slam service
-        // create pose service
-        // creation of time service and start
-        
+        // time setup
+        createTimeService(config.getTickTime(), config.getDuration());
     }
 
-    private static void createCameraServices(List<Camera> cameras) {
-        for (Camera camera : cameras) {
+    private static void createAllCameraServices(Cameras cameras) {
+        for (Camera camera : cameras.getCamerasConfig()) {
             CameraService cameraService = new CameraService(camera);
-            Thread thread = new Thread(cameraService);
+            Thread thread = new Thread(cameraService, cameraService.getName());
             thread.start();
         }
     }
 
-    private static Config getConfig(String filePath) {
-        Gson gson = new Gson();
-        try (FileReader reader = new FileReader(filePath)) {
-            Config config = gson.fromJson(reader, Config.class);
-            return config;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    private static void createAllLidarServices(LiDarWorkers lidars) {
+        for (LiDarWorkerTracker lidar : lidars.getLidarsConfig()) {
+            LiDarService lidarService = new LiDarService(lidar);
+            Thread thread = new Thread(lidarService, lidarService.getName());
+            thread.start();
         }
+    }
+
+    private static void createFusionSlamService(FusionSlam fusionSlam) {
+        FusionSlamService fusionSlamService = new FusionSlamService(fusionSlam);
+        Thread thread = new Thread(fusionSlamService, "FusionSlamService");
+        thread.start();
+    }
+
+    private static void createPoseService(GPSIMU gpsimu) {
+        PoseService poseService = new PoseService(gpsimu);
+        Thread thread = new Thread(poseService, "PoseService");
+        thread.start();
+    }
+
+    private static void createTimeService(int tickTime, int duration) {
+        TimeService timeService = new TimeService(tickTime, duration);
+        Thread thread = new Thread(timeService, "TimeService");
+        thread.start();
     }
 }

@@ -25,7 +25,7 @@ public class FusionSlam {
      * 
      * @return the singleton FusionSlam object
      */
-    public FusionSlam getInstance() {
+    public static FusionSlam getInstance() {
         if (instance == null) {
             instance = new FusionSlam();
         }

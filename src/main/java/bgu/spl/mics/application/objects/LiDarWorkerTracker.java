@@ -14,16 +14,13 @@ public class LiDarWorkerTracker {
     private final int frequency;
     private STATUS status;
     private final List<TrackedObject> lastTrackedObjects;
-    private final LiDarDataBase lidarDb;
+    private LiDarDataBase lidarDb;
 
     public LiDarWorkerTracker(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
         status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
-
-        String PATH_TO_LIDAR_DATA_FILE = "example input/lidar_data.json";
-        lidarDb = LiDarDataBase.getInstance(PATH_TO_LIDAR_DATA_FILE);
     }
 
     /**
@@ -56,6 +53,10 @@ public class LiDarWorkerTracker {
      */
     public void setStatus(STATUS status) {
         this.status = status;
+    }
+
+    public void updateDbFilePath(String filePath) {
+        lidarDb = LiDarDataBase.getInstance(filePath);
     }
 
     /**

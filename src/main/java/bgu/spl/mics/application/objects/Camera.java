@@ -1,12 +1,7 @@
 package bgu.spl.mics.application.objects;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * Represents a camera sensor on the robot.
@@ -17,14 +12,13 @@ public class Camera {
     private final int frequency;
     private STATUS status;
     private final List<StampedDetectedObjects> detectedObjs;
-    private final List<StampedDetectedObjects> allDetectedObjs;
+    private List<StampedDetectedObjects> allDetectedObjs;
 
     public Camera(int id, int frequency) {
         this.id = id;
         this.frequency = frequency;
         status = STATUS.UP;
         detectedObjs = new ArrayList<>();
-        allDetectedObjs = loadDetectedObjectsFromFile();
     }
 
     /**
@@ -59,6 +53,10 @@ public class Camera {
         this.status = status;
     }
 
+    public void setAllDetectedObjects(List<StampedDetectedObjects> allDetectedObjects) {
+        this.allDetectedObjs = allDetectedObjects;
+    }
+
     /**
      * 
      * @param currentTime to look for objects in the database
@@ -87,24 +85,5 @@ public class Camera {
             }
         }
         return null;
-    }
-
-    /**
-     * helper function
-     * 
-     * @return a list of all the objects which are available in the database
-     */
-    private List<StampedDetectedObjects> loadDetectedObjectsFromFile() {
-        Gson gson = new Gson();
-        try {
-            FileReader reader = new FileReader("camera_data.json");
-            Type stampDetectedObjectsType = new TypeToken<List<StampedDetectedObjects>>() {
-            }.getType();
-            List<StampedDetectedObjects> stampDetectedObjectsList = gson.fromJson(reader, stampDetectedObjectsType);
-            return stampDetectedObjectsList;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

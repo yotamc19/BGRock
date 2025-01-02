@@ -30,7 +30,7 @@ public class CameraService extends MicroService {
     public CameraService(Camera camera) {
         super("Camera" + camera.getId());
         this.camera = camera;
-        statisticalFolder = statisticalFolder.getInstance();////////////////////// yes?
+        statisticalFolder = StatisticalFolder.getInstance();
     }
 
     /**
