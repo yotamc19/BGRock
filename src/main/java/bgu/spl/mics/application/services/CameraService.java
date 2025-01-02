@@ -49,7 +49,6 @@ public class CameraService extends MicroService {
                 
                 DetectObjectsEvent e = new DetectObjectsEvent(stampedDetectedObjects);
                 Future<Boolean> f = sendEvent(e);
-                // add some statistics
                 int addedDetectedObjects = stampedDetectedObjects.getDetectedObjects().size();
                 statisticalFolder.increaseNumDetectedObjects(addedDetectedObjects);
             }

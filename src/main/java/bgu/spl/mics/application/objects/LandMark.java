@@ -61,17 +61,14 @@ public class LandMark {
     public CloudPoint getPreciseCoordinates() {
         float sumX = 0;
         float sumY = 0;
-        float sumZ = 0;
         for (CloudPoint point : coordinates) {
             sumX += point.getX();
             sumY += point.getY();
-            sumZ += point.getZ();
         }
         float currentCoordinatesSize = (float) coordinates.size();
         float exactX = sumX / currentCoordinatesSize;
         float exactY = sumY / currentCoordinatesSize;
-        float exactZ = sumZ / currentCoordinatesSize;
 
-        return new CloudPoint(exactX, exactY, exactZ);
+        return new CloudPoint(exactX, exactY);
     }
 }

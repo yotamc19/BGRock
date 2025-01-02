@@ -1,9 +1,11 @@
 package bgu.spl.mics.application.services;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TerminatedBroadCast;
 import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.StatisticalFolder;
 
 /**
  * TimeService acts as the global timer for the system, broadcasting
@@ -57,13 +59,30 @@ public class TimeService extends MicroService {
 
             terminate();
             sendBroadcast(new TerminatedBroadCast()); // finished running the program
-            Thread.currentThread().interrupt();
+
+            StatisticalFolder s = StatisticalFolder.getInstance();
+            System.out.println(1);
+
+            // try {
+            //     TimeUnit.SECONDS.sleep(3);
+            // } catch (InterruptedException e) {
+            //     System.out.println(e.toString());
+            // }
+            
+            // Map<Thread, StackTraceElement[]> threadMap = Thread.getAllStackTraces();
+
+            // System.out.println("Active Threads:");
+            // for (Thread thread : threadMap.keySet()) {
+            //     System.out.println("Thread Name: " + thread.getName() +
+            //             ", State: " + thread.getState() +
+            //             ", ID: " + thread.getName());
+            // }
         });
 
         // try {
-            t.start();
+        t.start();
         // } catch (InterruptedException e) {
-        //     System.out.println(e.toString());
+        // System.out.println(e.toString());
         // }
     }
 }

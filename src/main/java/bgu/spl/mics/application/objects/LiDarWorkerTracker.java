@@ -15,10 +15,12 @@ public class LiDarWorkerTracker {
     private STATUS status;
     private List<TrackedObject> lastTrackedObjects;
     private LiDarDataBase lidarDb;
+    private StatisticalFolder statisticalFolder;
 
     public LiDarWorkerTracker() {
         status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
+        statisticalFolder = StatisticalFolder.getInstance();
     }
     
     /**
@@ -101,6 +103,7 @@ public class LiDarWorkerTracker {
                 time,
                 detectedObject.getDescription(),
                 coordinates));
+        statisticalFolder.increaseNumTrackedObjects(1);
     }
 
     /**

@@ -15,10 +15,12 @@ public class FusionSlam {
     private static FusionSlam instance = null;
     private final List<LandMark> landmarks;
     private final List<Pose> poses;
+    private StatisticalFolder statisticalFolder;
 
     private FusionSlam() {
         landmarks = new ArrayList<>();
         poses = new ArrayList<>();
+        statisticalFolder = StatisticalFolder.getInstance();
     }
 
     /**
@@ -54,16 +56,18 @@ public class FusionSlam {
      *                      updated
      */
     public void updatePosition(TrackedObject trackedObject) {
+        if (trackedObject.getId().equals("Wall_4")) {
+            System.out.println("Found Wall_4 in time " + trackedObject.getTime());
+        }
         LandMark trackedLandmark = getLandmarkById(trackedObject.getId());
         if (trackedLandmark == null) { // the landmark has been recognized before //? has not maybe
             trackedLandmark = new LandMark(
                     trackedObject.getId(),
                     trackedObject.getDescription(),
                     getGlobalCoordinates(trackedObject)
-            // trackedObject.getCoordinates()////////////////// ? not the correct
-            // coordinates?
             );
             landmarks.add(trackedLandmark);
+            statisticalFolder.increaseNumLandmarks(1);
         } else { // first time seeing this landmark // not first time maybe?
             // trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
             trackedLandmark.updateCoordinates(getGlobalCoordinates(trackedObject));
@@ -86,7 +90,7 @@ public class FusionSlam {
      */
     private LandMark getLandmarkById(String id) {
         for (LandMark landmark : landmarks) {
-            if (landmark.getId() == id) {
+            if (landmark.getId().equals(id)) {
                 return landmark;
             }
         }
@@ -130,6 +134,6 @@ public class FusionSlam {
         double xGlobal = (cosinYaw * xLocal) - (sinYaw * yLocal) + xRobot;
         double yGlobal = (sinYaw * xLocal) + (cosinYaw * yLocal) + yRobot;
 
-        return new CloudPoint(xGlobal, yGlobal, point.getZ());
+        return new CloudPoint(xGlobal, yGlobal);
     }
 }

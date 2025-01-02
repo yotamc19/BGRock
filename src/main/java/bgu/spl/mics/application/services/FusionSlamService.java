@@ -1,11 +1,17 @@
 package bgu.spl.mics.application.services;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TerminatedBroadCast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.FusionSlam;
+import bgu.spl.mics.application.objects.Output;
+import bgu.spl.mics.application.objects.StatisticalFolder;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
@@ -18,6 +24,7 @@ import bgu.spl.mics.application.objects.TrackedObject;
  */
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
+    private StatisticalFolder statisticalFolder;
 
     /**
      * Constructor for FusionSlamService.
@@ -28,6 +35,7 @@ public class FusionSlamService extends MicroService {
     public FusionSlamService(FusionSlam fusionSlam) {
         super("FusionSlamService");
         this.fusionSlam = fusionSlam;
+        this.statisticalFolder = StatisticalFolder.getInstance();
     }
 
     /**
@@ -49,12 +57,26 @@ public class FusionSlamService extends MicroService {
         });
 
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            int currentTime = tickBroadcast.getTime();
-            System.out.println(getName() + " " + currentTime);
+            statisticalFolder.increaseSystemRuntimeByNumOfTicks(1);
         });
 
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
             terminate();
+
+            Output output = new Output(
+                    statisticalFolder.getSystemRuntime(),
+                    statisticalFolder.getNumDetectedObjects(),
+                    statisticalFolder.getNumTrackedObjects(),
+                    statisticalFolder.getNumLandmarks(),
+                    fusionSlam.getLandmarks());
+                    
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            try (FileWriter writer = new FileWriter("output_file.json")) {
+                gson.toJson(output, writer);
+                System.out.println("Output have been written to output_file.json");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
     }
 }

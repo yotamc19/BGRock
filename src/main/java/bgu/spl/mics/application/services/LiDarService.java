@@ -11,7 +11,6 @@ import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.LiDarWorkerTracker;
 import bgu.spl.mics.application.objects.STATUS;
-import bgu.spl.mics.application.objects.StatisticalFolder;
 import bgu.spl.mics.application.objects.TrackedObject;
 
 /**
@@ -25,7 +24,6 @@ import bgu.spl.mics.application.objects.TrackedObject;
  */
 public class LiDarService extends MicroService {
     private final LiDarWorkerTracker liDarWorkerTracker;
-    private StatisticalFolder statisticalFolder;
 
     /**
      * Constructor for LiDarService.
@@ -36,8 +34,6 @@ public class LiDarService extends MicroService {
     public LiDarService(LiDarWorkerTracker liDarWorkerTracker) {
         super("LiDarWorkerTracker" + liDarWorkerTracker.getId());
         this.liDarWorkerTracker = liDarWorkerTracker;
-        // add statistics folder
-        statisticalFolder = StatisticalFolder.getInstance();
     }
 
     /**
@@ -60,9 +56,6 @@ public class LiDarService extends MicroService {
             if (trackedObjectsFound.size() > 0) {
                 TrackedObjectsEvent e = new TrackedObjectsEvent(trackedObjectsFound);
                 Future<Boolean> f = sendEvent(e);
-                // add some statistics
-                int addedTrackedObjects = trackedObjectsFound.size();
-                statisticalFolder.increaseNumTrackedObjects(addedTrackedObjects);
             }
         });
 

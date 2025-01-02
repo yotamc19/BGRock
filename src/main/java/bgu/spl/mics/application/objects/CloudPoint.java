@@ -11,18 +11,15 @@ import java.util.List;
 public class CloudPoint {
     private final double x;
     private final double y;
-    private final double z;
 
     public CloudPoint(List<Double> coordinates) {
         this.x = coordinates.get(0);
         this.y = coordinates.get(1);
-        this.z = coordinates.get(2);
     }
 
-    public CloudPoint(double x, double y, double z) {
+    public CloudPoint(double x, double y) {
         this.x = x;
         this.y = y;
-        this.z = z;
     }
 
     /**
@@ -39,13 +36,5 @@ public class CloudPoint {
      */
     public double getY() {
         return y;
-    }
-
-    /**
-     * 
-     * @return z coordinate
-     */
-    public double getZ() {
-        return z;
     }
 }
