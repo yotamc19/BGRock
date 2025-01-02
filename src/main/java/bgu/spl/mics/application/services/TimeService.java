@@ -44,15 +44,26 @@ public class TimeService extends MicroService {
                     return;
                 }
 
+                System.out.println(currentTick);
+
+                if (currentTick == 29) {
+                    System.out.println(2);
+                }
+
                 currentTick++;
                 TickBroadcast tickBroadcast = new TickBroadcast(currentTick);
                 sendBroadcast(tickBroadcast);
             }
 
-            sendBroadcast(new TerminatedBroadCast()); // finished running the program
             terminate();
+            sendBroadcast(new TerminatedBroadCast()); // finished running the program
+            Thread.currentThread().interrupt();
         });
 
-        t.start();
+        // try {
+            t.start();
+        // } catch (InterruptedException e) {
+        //     System.out.println(e.toString());
+        // }
     }
 }

@@ -49,6 +49,7 @@ public class LiDarService extends MicroService {
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             int currentTime = tickBroadcast.getTime();
+            System.out.println(getName() + " " + currentTime);
             List<TrackedObject> trackedObjectsFound = new ArrayList<>();
             List<TrackedObject> lastTrackedObjects = liDarWorkerTracker.getLastTrackedObjects();
             for (TrackedObject trackedObject : lastTrackedObjects) {

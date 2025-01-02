@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.PoseEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadCast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.FusionSlam;
@@ -48,7 +49,12 @@ public class FusionSlamService extends MicroService {
         });
 
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
+            int currentTime = tickBroadcast.getTime();
+            System.out.println(getName() + " " + currentTime);
+        });
 
+        subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
+            terminate();
         });
     }
 }

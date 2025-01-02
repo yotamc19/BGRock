@@ -20,7 +20,7 @@ public class LiDarWorkerTracker {
         status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
     }
-
+    
     /**
      * 
      * @return this lidar id

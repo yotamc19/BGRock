@@ -2,9 +2,11 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.PoseEvent;
+import bgu.spl.mics.application.messages.TerminatedBroadCast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.GPSIMU;
 import bgu.spl.mics.application.objects.Pose;
+import bgu.spl.mics.application.objects.STATUS;
 
 /**
  * PoseService is responsible for maintaining the robot's current pose (position
@@ -32,18 +34,20 @@ public class PoseService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            /**
-             * get the current pose from the json file
-             * send a poseEvent to fusionSlamService- current pose, current time
-             * should handle terminated?
-             */
-
             int currentTime = tickBroadcast.getTime();
+            System.out.println(getName() + " " + currentTime);
             Pose pose = gpsimu.getPoseByTimeFromDb(currentTime);
             gpsimu.updateCurrentTick(currentTime);
-            gpsimu.addPose(pose);
-            PoseEvent e = new PoseEvent(pose, currentTime);
-            sendEvent(e);
+            if (pose != null) {
+                gpsimu.addPose(pose);
+                PoseEvent e = new PoseEvent(pose, currentTime);
+                sendEvent(e);
+            }
+        });
+
+        subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {
+            gpsimu.setStatus(STATUS.DOWN);
+            terminate();
         });
     }
 }

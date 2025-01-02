@@ -43,8 +43,10 @@ public class CameraService extends MicroService {
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             int currentTime = tickBroadcast.getTime();
+            System.out.println(getName() + " " + currentTime);
             StampedDetectedObjects stampedDetectedObjects = camera.detectObjects(currentTime + camera.getFrequency());
             if (stampedDetectedObjects != null) {
+                
                 DetectObjectsEvent e = new DetectObjectsEvent(stampedDetectedObjects);
                 Future<Boolean> f = sendEvent(e);
                 // add some statistics
