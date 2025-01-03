@@ -15,6 +15,7 @@ import bgu.spl.mics.application.objects.STATUS;
  */
 public class PoseService extends MicroService {
     private final GPSIMU gpsimu;
+    private int prevPoseEventTime;
 
     /**
      * Constructor for PoseService.
@@ -24,6 +25,7 @@ public class PoseService extends MicroService {
     public PoseService(GPSIMU gpsimu) {
         super("PoseService");
         this.gpsimu = gpsimu;
+        this.prevPoseEventTime = 0;
     }
 
     /**
@@ -36,13 +38,17 @@ public class PoseService extends MicroService {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             int currentTime = tickBroadcast.getTime();
             System.out.println(getName() + " " + currentTime);
-            Pose pose = gpsimu.getPoseByTimeFromDb(currentTime);
-            gpsimu.updateCurrentTick(currentTime);
-            if (pose != null) {
-                gpsimu.addPose(pose);
-                PoseEvent e = new PoseEvent(pose, currentTime);
-                sendEvent(e);
+
+            for (int i = prevPoseEventTime + 1; i <= currentTime; i++) {
+                Pose pose = gpsimu.getPoseByTimeFromDb(i);
+                gpsimu.updateCurrentTick(i);
+                if (pose != null) {
+                    gpsimu.addPose(pose);
+                    PoseEvent e = new PoseEvent(pose, i);
+                    sendEvent(e);
+                }
             }
+            prevPoseEventTime = currentTime;
         });
 
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {

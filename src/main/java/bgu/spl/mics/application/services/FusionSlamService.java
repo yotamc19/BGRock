@@ -24,6 +24,7 @@ import bgu.spl.mics.application.objects.TrackedObject;
 public class FusionSlamService extends MicroService {
     private final FusionSlam fusionSlam;
     private StatisticalFolder statisticalFolder;
+    private int lastPoseTime;
 
     /**
      * Constructor for FusionSlamService.
@@ -35,6 +36,7 @@ public class FusionSlamService extends MicroService {
         super("FusionSlamService");
         this.fusionSlam = fusionSlam;
         this.statisticalFolder = StatisticalFolder.getInstance();
+        this.lastPoseTime = 0;
     }
 
     /**
@@ -46,13 +48,26 @@ public class FusionSlamService extends MicroService {
     @Override
     protected void initialize() {
         subscribeEvent(TrackedObjectsEvent.class, trackObjectsEvent -> {
+            int maxTrackedObjectTime = 0;
             for (TrackedObject trackedObject : trackObjectsEvent.getTrackedObjects()) {
-                fusionSlam.updatePosition(trackedObject);
+                if (maxTrackedObjectTime < trackedObject.getTime()) {
+                    maxTrackedObjectTime = trackedObject.getTime();
+                }
+            }
+            if (lastPoseTime < maxTrackedObjectTime) {
+                TrackedObjectsEvent newEvent = new TrackedObjectsEvent(trackObjectsEvent.getTrackedObjects());
+                sendEvent(newEvent);
+                System.out.println("EXITED BECAUSE NOT ENOUGH POSES RECIEVED");
+            } else {
+                for (TrackedObject trackedObject : trackObjectsEvent.getTrackedObjects()) {
+                    fusionSlam.updatePosition(trackedObject);
+                }
             }
         });
 
         subscribeEvent(PoseEvent.class, poseEvent -> {
             fusionSlam.updatePose(poseEvent.getPose());
+            lastPoseTime = poseEvent.getPose().getTime();
         });
 
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {

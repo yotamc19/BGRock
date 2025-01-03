@@ -56,21 +56,18 @@ public class FusionSlam {
      *                      updated
      */
     public void updatePosition(TrackedObject trackedObject) {
-        if (trackedObject.getId().equals("Wall_4")) {
-            System.out.println("Found Wall_4 in time " + trackedObject.getTime());
-        }
         LandMark trackedLandmark = getLandmarkById(trackedObject.getId());
-        if (trackedLandmark == null) { // the landmark has been recognized before //? has not maybe
+        List<CloudPoint> globalCoordinates = getGlobalCoordinates(trackedObject);
+        if (trackedLandmark == null) { // the landmark has been recognized before
             trackedLandmark = new LandMark(
                     trackedObject.getId(),
                     trackedObject.getDescription(),
-                    getGlobalCoordinates(trackedObject)
+                    globalCoordinates
             );
             landmarks.add(trackedLandmark);
             statisticalFolder.increaseNumLandmarks(1);
-        } else { // first time seeing this landmark // not first time maybe?
-            // trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
-            trackedLandmark.updateCoordinates(getGlobalCoordinates(trackedObject));
+        } else { // first time seeing this landmark
+            trackedLandmark.updateCoordinates(globalCoordinates);
         }
     }
 

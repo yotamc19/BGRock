@@ -63,9 +63,6 @@ public class Camera {
         if (status == STATUS.UP) {
             for (int i = 0; i < allDetectedObjects.size(); i++) {
                 if (time == allDetectedObjects.get(i).getTime()) {
-                    // if (i == allDetectedObjects.size() - 1) {
-                    //     status = STATUS.DOWN;
-                    // }
                     detectedObjects.add(allDetectedObjects.get(i));
                     return allDetectedObjects.get(i);
                 }
