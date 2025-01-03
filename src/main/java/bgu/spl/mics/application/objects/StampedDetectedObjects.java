@@ -8,8 +8,6 @@ import java.util.List;
  * Includes the time of detection and a list of detected objects.
  */
 public class StampedDetectedObjects {
-    // private final int time;
-    // private final List<DetectedObject> detectedObjects;
     private int time;
     private List<DetectedObject> detectedObjects;
 
