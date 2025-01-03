@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken;
  */
 public class LiDarDataBase {
     private List<StampedCloudPoints> cloudPoints;
+    private static volatile boolean isDataLoaded;
 
     private static class LiDarDataBaseSingletonHolder{
         private static LiDarDataBase instance = new LiDarDataBase();    
@@ -22,6 +23,7 @@ public class LiDarDataBase {
 
     private LiDarDataBase() {
         cloudPoints = new ArrayList<>();
+        isDataLoaded = false;
     }
 
     /**
@@ -31,6 +33,9 @@ public class LiDarDataBase {
      * @return The singleton instance of LiDarDataBase.
      */
     public static LiDarDataBase getInstance(String filePath) {
+        if (!isDataLoaded){
+            LiDarDataBaseSingletonHolder.instance.loadData(filePath);
+        }
         return LiDarDataBaseSingletonHolder.instance; // need to call loadData from the main in the initialization
     }
 
