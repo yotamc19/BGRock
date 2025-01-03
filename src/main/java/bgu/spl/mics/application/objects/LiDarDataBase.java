@@ -35,6 +35,7 @@ public class LiDarDataBase {
     public static LiDarDataBase getInstance(String filePath) {
         if (!isDataLoaded){
             LiDarDataBaseSingletonHolder.instance.loadData(filePath);
+            isDataLoaded = true;
         }
         return LiDarDataBaseSingletonHolder.instance; // need to call loadData from the main in the initialization
     }

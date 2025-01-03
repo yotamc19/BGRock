@@ -25,7 +25,7 @@ public class StatisticalFolder {
         numLandmarks = new AtomicInteger(0);
     }
 
-    public StatisticalFolder getInstance() {
+    public static StatisticalFolder getInstance() {
         return StatisticalFolderSingletonHolder.instance;
     }
 

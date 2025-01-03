@@ -30,7 +30,7 @@ public class FusionSlam {
      * 
      * @return the singleton FusionSlam object
      */
-    public FusionSlam getInstance() {
+    public static FusionSlam getInstance() {
         return FusionSlamSingletonHolder.instance;
     }
 
