@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,12 +8,16 @@ import java.util.List;
  * Includes the time of detection and a list of detected objects.
  */
 public class StampedDetectedObjects {
-    private final int time;
-    private final List<DetectedObject> detectedObjs;
+    private int time;
+    private List<DetectedObject> detectedObjects;
 
-    public StampedDetectedObjects(int time, List<DetectedObject> detectedObjs) {
+    public StampedDetectedObjects() {
+        this.detectedObjects = new ArrayList<>();
+    }
+
+    public StampedDetectedObjects(int time, List<DetectedObject> detectedObjects) {
         this.time = time;
-        this.detectedObjs = detectedObjs;
+        this.detectedObjects = detectedObjects;
     }
 
     public int getTime() {
@@ -20,6 +25,6 @@ public class StampedDetectedObjects {
     }
 
     public List<DetectedObject> getDetectedObjects() {
-        return detectedObjs;
+        return detectedObjects;
     }
 }

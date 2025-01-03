@@ -35,24 +35,20 @@ public class TimeService extends MicroService {
      */
     @Override
     protected void initialize() {
-        Thread t = new Thread(() -> {
-            while (currentTick < duration) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(tickTime);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
-
-                currentTick++;
-                TickBroadcast tickBroadcast = new TickBroadcast(currentTick);
-                sendBroadcast(tickBroadcast);
+        while (currentTick < duration) {
+            try {
+                TimeUnit.SECONDS.sleep(tickTime);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             }
 
-            sendBroadcast(new TerminatedBroadCast()); // finished running the program
-            terminate();
-        });
+            currentTick += tickTime;
+            TickBroadcast tickBroadcast = new TickBroadcast(currentTick);
+            sendBroadcast(tickBroadcast);
+        }
 
-        t.start();
+        terminate();
+        sendBroadcast(new TerminatedBroadCast()); // finished running the program
     }
 }

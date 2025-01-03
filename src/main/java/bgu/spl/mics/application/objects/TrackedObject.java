@@ -12,12 +12,14 @@ public class TrackedObject {
     private int time;
     private final String description;
     private final List<CloudPoint> coordinates;
+    private boolean isSentToFusion;
 
     public TrackedObject(String id, int time, String description, List<CloudPoint> coordinates) {
         this.id = id;
         this.time = time;
         this.description = description;
         this.coordinates = coordinates;
+        this.isSentToFusion = false;
     }
 
     public String getId() {
@@ -38,5 +40,13 @@ public class TrackedObject {
 
     public List<CloudPoint> getCoordinates() {
         return coordinates;
+    }
+
+    public boolean getIsSentToFusion() {
+        return isSentToFusion;
+    }
+
+    public void setIsSentToFusion(boolean isSentToFusion) {
+        this.isSentToFusion = isSentToFusion;
     }
 }

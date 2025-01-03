@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -19,11 +18,11 @@ public class GPSIMU {
     private List<Pose> poses;
     private List<Pose> allPoses;
 
-    public GPSIMU() {
+    public GPSIMU(String filePath) {
         currentTick = 0;
         status = STATUS.UP;
         poses = new ArrayList<>();
-        allPoses = loadPosesFromFile();
+        allPoses = loadPosesFromFile(filePath);
     }
 
     public int getCurrentTick() {
@@ -59,10 +58,11 @@ public class GPSIMU {
         return null;
     }
 
-    private List<Pose> loadPosesFromFile() {
+    private List<Pose> loadPosesFromFile(String filePath) {
         Gson gson = new Gson();
         try {
-            FileReader reader = new FileReader("pose_data.json");
+            // FileReader reader = new FileReader(filePath);
+            FileReader reader = new FileReader("example input/pose_data.json");
             Type posesType = new TypeToken<List<Pose>>() {
             }.getType();
             List<Pose> posesList = gson.fromJson(reader, posesType);

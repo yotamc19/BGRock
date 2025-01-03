@@ -14,6 +14,7 @@ import java.util.List;
 public class FusionSlam {
     private final List<LandMark> landmarks;
     private final List<Pose> poses;
+    private StatisticalFolder statisticalFolder;
 
     private static class FusionSlamSingletonHolder{
         private static FusionSlam instance = new FusionSlam();
@@ -22,13 +23,14 @@ public class FusionSlam {
     private FusionSlam() {
         landmarks = new ArrayList<>();
         poses = new ArrayList<>();
+        statisticalFolder = StatisticalFolder.getInstance();
     }
 
     /**
      * 
      * @return the singleton FusionSlam object
      */
-    public FusionSlam getInstance() {
+    public static FusionSlam getInstance() {
         return FusionSlamSingletonHolder.instance;
     }
 
@@ -55,18 +57,17 @@ public class FusionSlam {
      */
     public void updatePosition(TrackedObject trackedObject) {
         LandMark trackedLandmark = getLandmarkById(trackedObject.getId());
-        if (trackedLandmark == null) { // the landmark has been recognized before //? has not maybe
+        List<CloudPoint> globalCoordinates = getGlobalCoordinates(trackedObject);
+        if (trackedLandmark == null) { // the landmark has been recognized before
             trackedLandmark = new LandMark(
                     trackedObject.getId(),
                     trackedObject.getDescription(),
-                    getGlobalCoordinates(trackedObject)
-            // trackedObject.getCoordinates()////////////////// ? not the correct
-            // coordinates?
+                    globalCoordinates
             );
             landmarks.add(trackedLandmark);
-        } else { // first time seeing this landmark // not first time maybe?
-            // trackedLandmark.updateCoordinates(convertToGlobalCoordinates(trackedObject));
-            trackedLandmark.updateCoordinates(getGlobalCoordinates(trackedObject));
+            statisticalFolder.increaseNumLandmarks(1);
+        } else { // first time seeing this landmark
+            trackedLandmark.updateCoordinates(globalCoordinates);
         }
     }
 
@@ -86,7 +87,7 @@ public class FusionSlam {
      */
     private LandMark getLandmarkById(String id) {
         for (LandMark landmark : landmarks) {
-            if (landmark.getId() == id) {
+            if (landmark.getId().equals(id)) {
                 return landmark;
             }
         }
@@ -130,6 +131,6 @@ public class FusionSlam {
         double xGlobal = (cosinYaw * xLocal) - (sinYaw * yLocal) + xRobot;
         double yGlobal = (sinYaw * xLocal) + (cosinYaw * yLocal) + yRobot;
 
-        return new CloudPoint(xGlobal, yGlobal, point.getZ());
+        return new CloudPoint(xGlobal, yGlobal);
     }
 }

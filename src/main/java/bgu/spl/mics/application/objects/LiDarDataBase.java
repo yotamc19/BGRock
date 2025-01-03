@@ -35,6 +35,7 @@ public class LiDarDataBase {
     public static LiDarDataBase getInstance(String filePath) {
         if (!isDataLoaded){
             LiDarDataBaseSingletonHolder.instance.loadData(filePath);
+            isDataLoaded = true;
         }
         return LiDarDataBaseSingletonHolder.instance; // need to call loadData from the main in the initialization
     }
@@ -54,7 +55,7 @@ public class LiDarDataBase {
      */
     public List<CloudPoint> getCoordinatesById(String id) {
         for (StampedCloudPoints point : cloudPoints) {
-            if (point.getId() == id) {
+            if (point.getId().equals(id)) {
                 return point.getCloudPoints();
             }
         }
@@ -70,7 +71,8 @@ public class LiDarDataBase {
     public void loadData(String filePath) {
         Gson gson = new Gson();
         try {
-            FileReader reader = new FileReader(filePath);
+            // FileReader reader = new FileReader(filePath);
+            FileReader reader = new FileReader("example input/lidar_data.json");
             Type stampedCloudPointsType = new TypeToken<List<StampedCloudPoints>>() {
             }.getType();
             cloudPoints = gson.fromJson(reader, stampedCloudPointsType);

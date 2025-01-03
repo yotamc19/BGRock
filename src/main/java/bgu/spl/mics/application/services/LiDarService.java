@@ -2,7 +2,6 @@ package bgu.spl.mics.application.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.DetectObjectsEvent;
@@ -36,8 +35,7 @@ public class LiDarService extends MicroService {
     public LiDarService(LiDarWorkerTracker liDarWorkerTracker) {
         super("LiDarWorkerTracker" + liDarWorkerTracker.getId());
         this.liDarWorkerTracker = liDarWorkerTracker;
-        // add statistics folder
-        statisticalFolder = statisticalFolder.getInstance();
+        statisticalFolder = StatisticalFolder.getInstance();
     }
 
     /**
@@ -49,19 +47,22 @@ public class LiDarService extends MicroService {
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
             int currentTime = tickBroadcast.getTime();
+            System.out.println(getName() + " " + currentTime);
             List<TrackedObject> trackedObjectsFound = new ArrayList<>();
             List<TrackedObject> lastTrackedObjects = liDarWorkerTracker.getLastTrackedObjects();
             for (TrackedObject trackedObject : lastTrackedObjects) {
-                if (trackedObject.getTime() <= currentTime - liDarWorkerTracker.getFrequency()) {
+                if (trackedObject.getTime() <= currentTime + liDarWorkerTracker.getFrequency()
+                        && !trackedObject.getIsSentToFusion()) {
+                    trackedObject.setIsSentToFusion(true);
                     trackedObjectsFound.add(trackedObject);
                 }
             }
             if (trackedObjectsFound.size() > 0) {
                 TrackedObjectsEvent e = new TrackedObjectsEvent(trackedObjectsFound);
-                Future<Boolean> f = sendEvent(e);
-                // add some statistics
-                int addedTrackedObjects = trackedObjectsFound.size();
-                statisticalFolder.increaseNumTrackedObjects(addedTrackedObjects);
+                sendEvent(e);
+
+                int lastSystemRuntime = statisticalFolder.getSystemRuntime();
+                statisticalFolder.increaseSystemRuntimeByNumOfTicks(currentTime - lastSystemRuntime);
             }
         });
 
@@ -81,3 +82,17 @@ public class LiDarService extends MicroService {
         });
     }
 }
+
+/*
+ * found object through camera with stampedcloudpoints time if 4
+ * (should assume with time of 4 also in lidardb)
+ * my camera has a frequency of 2
+ * my camera will send detectedobject event in time 6
+ * my lidar will accept the detectedobject event from my camera
+ * Divide:
+ * if my lidar has a frequency of 2 or smaller ->
+ * it will instantly send trackedobject event to fusionslam
+ * else ->
+ * lets assume freq = 4,
+ * then it will send trackedobject to fusion slam only on time 4 + 4 = 6
+ */

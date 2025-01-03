@@ -10,22 +10,19 @@ import java.util.List;
  * Each worker tracks objects and sends observations to the FusionSlam service.
  */
 public class LiDarWorkerTracker {
-    private final int id;
-    private final int frequency;
+    private int id;
+    private int frequency;
     private STATUS status;
-    private final List<TrackedObject> lastTrackedObjects;
-    private final LiDarDataBase lidarDb;
+    private List<TrackedObject> lastTrackedObjects;
+    private LiDarDataBase lidarDb;
+    private StatisticalFolder statisticalFolder;
 
-    public LiDarWorkerTracker(int id, int frequency) {
-        this.id = id;
-        this.frequency = frequency;
+    public LiDarWorkerTracker() {
         status = STATUS.UP;
         lastTrackedObjects = new ArrayList<>();
-
-        String PATH_TO_LIDAR_DATA_FILE = "example input/lidar_data.json";
-        lidarDb = LiDarDataBase.getInstance(PATH_TO_LIDAR_DATA_FILE);
+        statisticalFolder = StatisticalFolder.getInstance();
     }
-
+    
     /**
      * 
      * @return this lidar id
@@ -58,11 +55,18 @@ public class LiDarWorkerTracker {
         this.status = status;
     }
 
+    public void updateDbFilePath(String filePath) {
+        lidarDb = LiDarDataBase.getInstance(filePath);
+    }
+
     /**
      * 
      * @return this lidar tracked objects
      */
     public List<TrackedObject> getLastTrackedObjects() {
+        if (lastTrackedObjects == null) {
+            lastTrackedObjects = new ArrayList<>();
+        }
         return lastTrackedObjects;
     }
 
@@ -99,6 +103,7 @@ public class LiDarWorkerTracker {
                 time,
                 detectedObject.getDescription(),
                 coordinates));
+        statisticalFolder.increaseNumTrackedObjects(1);
     }
 
     /**

@@ -1,4 +1,5 @@
 package bgu.spl.mics;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,9 +9,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
+ * The {@link MessageBusImpl class is the implementation of the MessageBus
+ * interface.
  * Write your implementation here!
- * Only one public method (in addition to getters which can be public solely for unit testing) may be added to this class
+ * Only one public method (in addition to getters which can be public solely for
+ * unit testing) may be added to this class
  * All other methods and members you add the class must be private.
  */
 public class MessageBusImpl implements MessageBus {
@@ -49,7 +52,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void complete(Event<T> e, T result) {
 		@SuppressWarnings("unchecked")
-		Future<T> f = (Future<T>)eventFutures.get(e);
+		Future<T> f = (Future<T>) eventFutures.get(e);
 		if (f != null) {
 			f.resolve(result);
 			eventFutures.remove(e);
@@ -60,12 +63,12 @@ public class MessageBusImpl implements MessageBus {
 	public void sendBroadcast(Broadcast b) {
 		List<MicroService> subs = broadcastSubscribers.get(b.getClass());
 		if (subs != null) {
-			for (MicroService m : subs) {
-				BlockingQueue<Message> q = microServiceQueues.get(m);
-				if (q != null) {
-					q.add(b);
-				} else {
-					System.out.println("sendBroadcast - queue is null");
+			synchronized (subs) {
+				for (MicroService m : subs) {
+					BlockingQueue<Message> q = microServiceQueues.get(m);
+					if (q != null) {
+						q.add(b);
+					}
 				}
 			}
 		}
@@ -79,12 +82,12 @@ public class MessageBusImpl implements MessageBus {
 			if (m != null) {
 				subs.add(m);
 				BlockingQueue<Message> q = microServiceQueues.get(m);
-				// if (q != null) {
+				if (q != null) {
 					q.add(e);
 					Future<T> future = new Future<>();
 					eventFutures.put(e, future);
 					return future;
-				// }
+				}
 			}
 		}
 		return null;
@@ -99,11 +102,11 @@ public class MessageBusImpl implements MessageBus {
 	public void unregister(MicroService m) {
 		microServiceQueues.remove(m);
 		eventSubscribers.values().forEach(q -> q.remove(m));
-		broadcastSubscribers.values().forEach(l -> l.remove(m));
 	}
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
+		// System.out.println(m.getName() + " is waiting to get a message");
 		BlockingQueue<Message> q = microServiceQueues.get(m);
 		if (q == null) {
 			throw new InterruptedException("This Micro Service is not registered");

@@ -47,8 +47,14 @@ public class LandMark {
      *                       of this landmar
      */
     public void updateCoordinates(List<CloudPoint> newCoordinates) {
-        for (CloudPoint point : newCoordinates) {
-            coordinates.add(point);
+        for (int i = 0; i < newCoordinates.size(); i++) {
+            if (i < coordinates.size()) { // coordinate index already existed
+                double averageX = (coordinates.get(i).getX() + newCoordinates.get(i).getX()) / 2;
+                double averageY = (coordinates.get(i).getY() + newCoordinates.get(i).getY()) / 2;
+                coordinates.set(i, new CloudPoint(averageX, averageY));
+            } else { // recieved more coordinates than the last time
+                coordinates.add(newCoordinates.get(i));
+            }
         }
     }
 
@@ -61,17 +67,14 @@ public class LandMark {
     public CloudPoint getPreciseCoordinates() {
         float sumX = 0;
         float sumY = 0;
-        float sumZ = 0;
         for (CloudPoint point : coordinates) {
             sumX += point.getX();
             sumY += point.getY();
-            sumZ += point.getZ();
         }
         float currentCoordinatesSize = (float) coordinates.size();
         float exactX = sumX / currentCoordinatesSize;
         float exactY = sumY / currentCoordinatesSize;
-        float exactZ = sumZ / currentCoordinatesSize;
 
-        return new CloudPoint(exactX, exactY, exactZ);
+        return new CloudPoint(exactX, exactY);
     }
 }
