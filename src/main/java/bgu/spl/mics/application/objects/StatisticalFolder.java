@@ -9,11 +9,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * identified.
  */
 public class StatisticalFolder {
-    private static StatisticalFolder instance = null;
     private AtomicInteger systemRuntime;
     private AtomicInteger numDetectedObjects;
     private AtomicInteger numTrackedObjects;
     private AtomicInteger numLandmarks;
+
+    private static class StatisticalFolderSingletonHolder{
+        private static StatisticalFolder instance = new StatisticalFolder();
+    }
 
     private StatisticalFolder() {
         systemRuntime = new AtomicInteger(0);
@@ -22,11 +25,8 @@ public class StatisticalFolder {
         numLandmarks = new AtomicInteger(0);
     }
 
-    public static StatisticalFolder getInstance() {
-        if (instance == null) {
-            instance = new StatisticalFolder();
-        }
-        return instance;
+    public StatisticalFolder getInstance() {
+        return StatisticalFolderSingletonHolder.instance;
     }
 
     public int getSystemRuntime() {

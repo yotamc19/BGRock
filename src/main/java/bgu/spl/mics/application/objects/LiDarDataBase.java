@@ -14,11 +14,16 @@ import com.google.gson.reflect.TypeToken;
  * tracked objects.
  */
 public class LiDarDataBase {
-    private static LiDarDataBase instance = null;
     private List<StampedCloudPoints> cloudPoints;
+    private static volatile boolean isDataLoaded;
+
+    private static class LiDarDataBaseSingletonHolder{
+        private static LiDarDataBase instance = new LiDarDataBase();    
+    }
 
     private LiDarDataBase() {
         cloudPoints = new ArrayList<>();
+        isDataLoaded = false;
     }
 
     /**
@@ -28,11 +33,10 @@ public class LiDarDataBase {
      * @return The singleton instance of LiDarDataBase.
      */
     public static LiDarDataBase getInstance(String filePath) {
-        if (instance == null) {
-            instance = new LiDarDataBase();
-            instance.loadData(filePath);
+        if (!isDataLoaded){
+            LiDarDataBaseSingletonHolder.instance.loadData(filePath);
         }
-        return instance;
+        return LiDarDataBaseSingletonHolder.instance; // need to call loadData from the main in the initialization
     }
 
     /**

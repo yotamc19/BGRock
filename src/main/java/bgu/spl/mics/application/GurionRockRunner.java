@@ -14,7 +14,7 @@ import bgu.spl.mics.application.services.LiDarService;
 import bgu.spl.mics.application.services.PoseService;
 import bgu.spl.mics.application.services.TimeService;
 
-/**
+/** 
  * The main entry point for the GurionRock Pro Max Ultra Over 9000 simulation.
  * <p>
  * This class initializes the system and starts the simulation by setting up

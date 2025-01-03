@@ -17,34 +17,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  * All other methods and members you add the class must be private.
  */
 public class MessageBusImpl implements MessageBus {
-	private static MessageBusImpl instance = null;
-	private final ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServiceQueues; // foreach MicroService,
-																								// hold a queue of
-																								// messages waiting to
-																								// be handled
-	private final ConcurrentHashMap<Class<? extends Event<?>>, ConcurrentLinkedQueue<MicroService>> eventSubscribers; // foreach
-																														// event,
-																														// hold
-																														// the
-																														// MicroServices
-																														// which
-																														// are
-																														// subscribed
-																														// to
-																														// this
-																														// event
-	private final ConcurrentHashMap<Class<? extends Broadcast>, List<MicroService>> broadcastSubscribers; // foreach
-																											// broadcast,
-																											// hold the
-																											// MicroServices
-																											// which are
-																											// subscribed
-																											// to this
-																											// broadcast
+	private final ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServiceQueues; // foreach MicroService, hold a queue of messages waiting to be handled
+	private final ConcurrentHashMap<Class<? extends Event<?>>, ConcurrentLinkedQueue<MicroService>> eventSubscribers; // foreach event, hold the MicroServices which are subscribed to this event
+	private final ConcurrentHashMap<Class<? extends Broadcast>, List<MicroService>> broadcastSubscribers; // foreach broadcast, hold the MicroServices which are subscribed to this broadcast
 	private final ConcurrentHashMap<Event<?>, Future<?>> eventFutures; // foreach event, hold the Future of this event
 
+	private static class MessageBusSingletonHolder{
+		private static MessageBusImpl instance = new MessageBusImpl();
+	}
+
 	private MessageBusImpl() {
-		instance = null;
 		microServiceQueues = new ConcurrentHashMap<>();
 		eventSubscribers = new ConcurrentHashMap<>();
 		broadcastSubscribers = new ConcurrentHashMap<>();
@@ -52,12 +34,9 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	public static synchronized MessageBusImpl getInstance() {
-		if (instance == null) {
-			instance = new MessageBusImpl();
-		}
-		return instance;
-	}
-
+        return MessageBusSingletonHolder.instance;
+    }
+	
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		eventSubscribers.putIfAbsent(type, new ConcurrentLinkedQueue<>());
@@ -82,18 +61,6 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		// List<MicroService> subs = broadcastSubscribers.get(b.getClass());
-		// if (subs != null) {
-		// for (MicroService m : subs) {
-		// BlockingQueue<Message> q = microServiceQueues.get(m);
-		// if (q != null) {
-		// q.add(b);
-		// } else {
-		// System.out.println("sendBroadcast - queue is null");
-		// }
-		// }
-		// }
-
 		List<MicroService> subs = broadcastSubscribers.get(b.getClass());
 		if (subs != null) {
 			synchronized (subs) {
@@ -117,10 +84,6 @@ public class MessageBusImpl implements MessageBus {
 				BlockingQueue<Message> q = microServiceQueues.get(m);
 				if (q != null) {
 					q.add(e);
-					// synchronized (q) { // Synchronize to notify threads waiting on this queue
-					// q.offer(e);
-					// q.notifyAll(); // Notify threads waiting for a message
-					// }
 					Future<T> future = new Future<>();
 					eventFutures.put(e, future);
 					return future;
