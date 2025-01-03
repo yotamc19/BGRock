@@ -14,14 +14,16 @@ import java.util.concurrent.LinkedBlockingQueue;
  * All other methods and members you add the class must be private.
  */
 public class MessageBusImpl implements MessageBus {
-	private static MessageBusImpl instance = null;
 	private final ConcurrentHashMap<MicroService, BlockingQueue<Message>> microServiceQueues; // foreach MicroService, hold a queue of messages waiting to be handled
 	private final ConcurrentHashMap<Class<? extends Event<?>>, ConcurrentLinkedQueue<MicroService>> eventSubscribers; // foreach event, hold the MicroServices which are subscribed to this event
 	private final ConcurrentHashMap<Class<? extends Broadcast>, List<MicroService>> broadcastSubscribers; // foreach broadcast, hold the MicroServices which are subscribed to this broadcast
 	private final ConcurrentHashMap<Event<?>, Future<?>> eventFutures; // foreach event, hold the Future of this event
 
+	private static class MessageBusSingletonHolder{
+		private static MessageBusImpl instance = new MessageBusImpl();
+	}
+
 	private MessageBusImpl() {
-		instance = null;
 		microServiceQueues = new ConcurrentHashMap<>();
 		eventSubscribers = new ConcurrentHashMap<>();
 		broadcastSubscribers = new ConcurrentHashMap<>();
@@ -29,10 +31,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	public static synchronized MessageBusImpl getInstance() {
-        if (instance == null) {
-            instance = new MessageBusImpl();
-        }
-        return instance;
+        return MessageBusSingletonHolder.instance;
     }
 	
 	@Override

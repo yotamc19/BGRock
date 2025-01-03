@@ -12,9 +12,12 @@ import java.util.List;
  * exists.
  */
 public class FusionSlam {
-    private static FusionSlam instance = null;
     private final List<LandMark> landmarks;
     private final List<Pose> poses;
+
+    private static class FusionSlamSingletonHolder{
+        private static FusionSlam instance = new FusionSlam();
+    }
 
     private FusionSlam() {
         landmarks = new ArrayList<>();
@@ -26,10 +29,7 @@ public class FusionSlam {
      * @return the singleton FusionSlam object
      */
     public FusionSlam getInstance() {
-        if (instance == null) {
-            instance = new FusionSlam();
-        }
-        return instance;
+        return FusionSlamSingletonHolder.instance;
     }
 
     /**
