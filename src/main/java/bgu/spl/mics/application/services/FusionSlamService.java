@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.PoseEvent;
 import bgu.spl.mics.application.messages.TerminatedBroadCast;
-import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrackedObjectsEvent;
 import bgu.spl.mics.application.objects.FusionSlam;
 import bgu.spl.mics.application.objects.Output;
@@ -54,10 +53,6 @@ public class FusionSlamService extends MicroService {
 
         subscribeEvent(PoseEvent.class, poseEvent -> {
             fusionSlam.updatePose(poseEvent.getPose());
-        });
-
-        subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-            statisticalFolder.increaseSystemRuntimeByNumOfTicks(1);
         });
 
         subscribeBroadcast(TerminatedBroadCast.class, terminatedBroadcast -> {

@@ -1,6 +1,5 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CrashedBroadcast;
 import bgu.spl.mics.application.messages.DetectObjectsEvent;
@@ -46,9 +45,8 @@ public class CameraService extends MicroService {
             System.out.println(getName() + " " + currentTime);
             StampedDetectedObjects stampedDetectedObjects = camera.detectObjects(currentTime + camera.getFrequency());
             if (stampedDetectedObjects != null) {
-                
                 DetectObjectsEvent e = new DetectObjectsEvent(stampedDetectedObjects);
-                Future<Boolean> f = sendEvent(e);
+                sendEvent(e);
                 int addedDetectedObjects = stampedDetectedObjects.getDetectedObjects().size();
                 statisticalFolder.increaseNumDetectedObjects(addedDetectedObjects);
             }
